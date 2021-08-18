@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_nearby"
+            android:icon="@drawable/ic_baseline_restaurant_24"
+            android:title="@string/nearby_restaurant"/>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_fav"
+            android:icon="@drawable/ic_baseline_favorite_24"
+            android:title="@string/favorite"/>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/order_history"
+            android:icon="@drawable/ic_baseline_history_24"
+            android:title="@string/order_history"/>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/update_information"
+            android:icon="@drawable/ic_baseline_account_circle_24"
+            android:title="@string/update_information"/>
+    </group>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_log_out"
+            android:icon="@drawable/ic_baseline_exit_to_app_24"
+            android:title="@string/nearby_restaurant"/>
+    </group>
+
+</menu>
