@@ -10,6 +10,7 @@ import com.sensei.linkrestaurant.Model.MenuModel;
 import com.sensei.linkrestaurant.Model.OrderModel;
 import com.sensei.linkrestaurant.Model.RestaurantModel;
 import com.sensei.linkrestaurant.Model.SizeModel;
+import com.sensei.linkrestaurant.Model.TokenModel;
 import com.sensei.linkrestaurant.Model.UpdateOrderModel;
 import com.sensei.linkrestaurant.Model.UpdateUserModel;
 import com.sensei.linkrestaurant.Model.UserModel;
@@ -84,7 +85,17 @@ public interface ILinkRestaurantAPI {
     Observable<MaxOrderModel> getMaxOrder (@Query("key") String apiKey,
                                            @Query("orderFBID") String orderFBID);
 
+    @GET("token")
+    Observable<TokenModel> getToken (@Query("key") String apiKey,
+                                           @Query("FBID") String FBID);
+
     //POST
+    @POST("token")
+    @FormUrlEncoded
+    Observable<TokenModel> updateTokenToServer(@Field("key") String apiKey,
+                                       @Field("orderFBID") String orderFBID,
+                                       @Field("orderPhone") String token);
+
 
     @POST("createOrder")
     @FormUrlEncoded

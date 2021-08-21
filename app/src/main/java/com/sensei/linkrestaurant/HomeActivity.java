@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.sensei.linkrestaurant.Adapter.MyRestaurantAdapter;
 import com.sensei.linkrestaurant.Adapter.RestaurantSliderAdapter;
 import com.sensei.linkrestaurant.Common.Common;
@@ -20,10 +21,13 @@ import com.sensei.linkrestaurant.Service.PicassoImageLoadingService;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,12 +79,13 @@ public class HomeActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_log_out,
+                R.id.nav_fav, R.id.nav_nearby, R.id.order_history, R.id.update_information)
                 .setDrawerLayout(drawer)
                 .build();
-        /*NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavController navController = Navigation.findNavController(this, R.id.nav_view);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);*/
+        NavigationUI.setupWithNavController(navigationView, navController);
 
         View headerView = navigationView.getHeaderView(0);
         txt_user_name = headerView.findViewById(R.id.txt_user_name);
@@ -162,6 +167,7 @@ public class HomeActivity extends AppCompatActivity {
                         Common.currentUser = null;
                         Common.currentRestaurant = null;
 
+                        FirebaseAuth.getInstance().signOut();
                         Intent intent  = new Intent(HomeActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -180,12 +186,12 @@ public class HomeActivity extends AppCompatActivity {
         return true;
     }
 
-/*    @Override
+   @Override
     public boolean onSupportNavigateUp() {
-        *//*NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavController navController = Navigation.findNavController(this, R.id.nav_view);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();*//*
-    }*/
+                || super.onSupportNavigateUp();
+    }
 
     //Register Event Bus
     @Override
@@ -207,7 +213,7 @@ public class HomeActivity extends AppCompatActivity {
             displayBanner(event.getRestaurantList());
             displayRestaurant(event.getRestaurantList());
         }else{
-            Toast.makeText(this, "[RESTAURANT LOAD]" + event.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "[RESTAURANT LOAD]" + event.getMessage(), Toast.LENGTH_LONG).show();
         }
         dialog.dismiss();
     }

@@ -1,5 +1,3 @@
-
-
 package com.sensei.linkrestaurant;
 
 import androidx.annotation.NonNull;

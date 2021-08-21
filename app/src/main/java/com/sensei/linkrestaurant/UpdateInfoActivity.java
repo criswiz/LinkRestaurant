@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -17,13 +18,17 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.sensei.linkrestaurant.Common.Common;
 import com.sensei.linkrestaurant.Retrofit.ILinkRestaurantAPI;
 import com.sensei.linkrestaurant.Retrofit.RetrofitClient;
 
 import butterknife.BindView;
 import dmax.dialog.SpotsDialog;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class UpdateInfoActivity extends AppCompatActivity {
 
@@ -78,6 +83,55 @@ public class UpdateInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.show();
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null){
+                    compositeDisposable.add(iLinkRestaurantAPI.updateUserInfo(Common.API_KEY,
+                            user.getPhoneNumber(),
+                            edt_username.getText().toString(),
+                            edt_userAddress.getText().toString(),
+                            user.getUid())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(updateUserModel -> {
+
+                                if (updateUserModel.isSuccess()) {
+                                    // If user has been update, just refresh again
+                                    compositeDisposable.add(iLinkRestaurantAPI.getUser(Common.API_KEY, user.getUid())
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe(userModel -> {
+
+                                                if (userModel.isSuccess()) {
+                                                    Common.currentUser = userModel.getResult().get(0);
+                                                    startActivity(new Intent(UpdateInfoActivity.this, HomeActivity.class));
+                                                    finish();
+                                                }
+                                                else {
+                                                    Toast.makeText(UpdateInfoActivity.this, "[[GET USER RESULT]]"+userModel.getResult().get(0), Toast.LENGTH_SHORT).show();
+                                                }
+                                                dialog.dismiss();
+
+                                            }, throwable -> {
+                                                dialog.dismiss();
+                                                Toast.makeText(UpdateInfoActivity.this, "[GET USER]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                            }));
+                                }
+                                else {
+                                    dialog.dismiss();
+                                    Toast.makeText(UpdateInfoActivity.this, "[UPDATE USER API RETURN]" + updateUserModel.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                            }, throwable -> {
+                                dialog.dismiss();
+                                Toast.makeText(UpdateInfoActivity.this, "[UPDATE USER API]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                            }));
+                }else {
+                    Toast.makeText(UpdateInfoActivity.this, "Not Signed in Please SignIn", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(UpdateInfoActivity.this, MainActivity.class));
+                    finish();
+                }
+
 
             }
         });
