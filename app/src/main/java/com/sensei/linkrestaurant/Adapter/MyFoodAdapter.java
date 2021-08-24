@@ -73,6 +73,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull MyViewHolder holder, int position) {
+        position = holder.getAdapterPosition();
         Picasso.get().load(foodList.get(position).getImage()).placeholder(R.drawable.app_icon).into(holder.img_food);
         holder.txt_food_name.setText(foodList.get(position).getName());
         holder.txt_food_price.setText(new StringBuilder(context.getString(R.string.money_sign)).append(foodList.get(position).getPrice()));
@@ -92,6 +93,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         }
 
         //Favorite Event
+        int finalPosition = position;
         holder.img_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,7 +103,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                     Map<String, String> headers = new HashMap<>();
                     headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                     compositeDisposable.add(iLinkRestaurantAPI.removeFavorite(headers,
-                            foodList.get(position).getId(),
+                            foodList.get(finalPosition).getId(),
                             Common.currentRestaurant.getId())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -112,7 +114,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                                 fav.setImageResource(R.drawable.ic_baseline_favorite_border_primary_color_24);
                                 fav.setTag(false);
                                 if (Common.currentFavOfRestaurant != null){
-                                    Common.removeFavorite(foodList.get(position).getId());
+                                    Common.removeFavorite(foodList.get(finalPosition).getId());
                                 }
                             }
                         }
@@ -127,12 +129,12 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                     Map<String, String> headers = new HashMap<>();
                     headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                     compositeDisposable.add(iLinkRestaurantAPI.insertFavorite(headers,
-                            foodList.get(position).getId(),
+                            foodList.get(finalPosition).getId(),
                             Common.currentRestaurant.getId(),
                             Common.currentRestaurant.getName(),
-                            foodList.get(position).getName(),
-                            foodList.get(position).getImage(),
-                            foodList.get(position).getPrice())
+                            foodList.get(finalPosition).getName(),
+                            foodList.get(finalPosition).getImage(),
+                            foodList.get(finalPosition).getPrice())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Consumer<FavoriteModel>() {
@@ -142,7 +144,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                                         fav.setImageResource(R.drawable.ic_baseline_favorite_primary_color_24);
                                         fav.setTag(true);
                                         if (Common.currentFavOfRestaurant != null){
-                                            Common.currentFavOfRestaurant.add(new FavoriteOnlyId(foodList.get(position).getId()));
+                                            Common.currentFavOfRestaurant.add(new FavoriteOnlyId(foodList.get(finalPosition).getId()));
                                         }
                                     }
                                 }
