@@ -9,12 +9,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
+
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.sensei.linkrestaurant.Common.Common;
 import com.sensei.linkrestaurant.Model.TokenModel;
 import com.sensei.linkrestaurant.Retrofit.ILinkRestaurantAPI;
@@ -31,7 +27,9 @@ import com.sensei.linkrestaurant.Retrofit.RetrofitClient;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,9 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener listener;
 
     private static final int APP_REQUEST_CODE = 1234;
-    CallbackManager callbackManager;
     private static final String EMAIL = "email";
-    LoginButton loginButton;
 
     @BindView(R.id.btn_sign_in)
     Button btn_sign_in;
@@ -76,35 +72,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppEventsLogger.activateApp(getApplication());
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
 
         init();
 
-        callbackManager = CallbackManager.Factory.create();
-
-        loginButton = (LoginButton) findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Collections.singletonList(EMAIL));
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-
-
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
     }
 
     private void init() {
@@ -133,8 +106,9 @@ public class MainActivity extends AppCompatActivity {
 
                             dialog.show();
 
-                            compositeDisposable.add((Disposable) iLinkRestaurantAPI.updateTokenToServer(Common.API_KEY,
-                                    user.getUid(),
+                            Map<String, String> headers = new HashMap<>();
+                            headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                            compositeDisposable.add(iLinkRestaurantAPI.updateTokenToServer(headers,
                                     task.getResult().getToken())
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
@@ -144,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                                             if (!tokenModel.isSuccess()) {
                                                 Toast.makeText(MainActivity.this, "[UPDATE TOKEN ERROR]" + tokenModel.getMessage(), Toast.LENGTH_SHORT).show();
 
-                                                compositeDisposable.add(iLinkRestaurantAPI.getUser(Common.API_KEY, user.getUid())
+                                                compositeDisposable.add(iLinkRestaurantAPI.getUser(headers)
                                                         .subscribeOn(Schedulers.io())
                                                         .observeOn(AndroidSchedulers.mainThread())
                                                         .subscribe(userModel -> {
@@ -154,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                                                                         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                                                                         startActivity(intent);
                                                                     } else {
-                                                                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                                                                        Intent intent = new Intent(MainActivity.this, UpdateInfoActivity.class);
                                                                         startActivity(intent);
                                                                     }
                                                                     finish();
@@ -162,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
                                                                 },
                                                                 throwable -> {
                                                                     dialog.dismiss();
-                                                                    Toast.makeText(MainActivity.this, "{GET USER API]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                    Toast.makeText(MainActivity.this, "[GET USER]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                                                 }));
                                             }
                                         }
@@ -191,12 +165,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        callbackManager.onActivityResult(requestCode, resultCode, data);
         if(requestCode == APP_REQUEST_CODE){
             IdpResponse response = IdpResponse.fromResultIntent(data);
             if (resultCode == RESULT_OK){
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+            }else{
+                Toast.makeText(MainActivity.this, "Failed to sign in", Toast.LENGTH_SHORT).show();
             }
 
         }

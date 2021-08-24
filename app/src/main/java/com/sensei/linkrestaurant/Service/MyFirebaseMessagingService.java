@@ -11,6 +11,7 @@ import com.sensei.linkrestaurant.Model.TokenModel;
 import com.sensei.linkrestaurant.Retrofit.ILinkRestaurantAPI;
 import com.sensei.linkrestaurant.Retrofit.RetrofitClient;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -48,7 +49,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //Save signed FBID by paper and get it back
         String fbid = Paper.book().read(Common.REMEMBER_FBID);
         String apiKey = Paper.book().read(Common.API_KEY_TAG);
-        compositeDisposable.add(iLinkRestaurantAPI.updateTokenToServer(apiKey,fbid,newToken )
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+        compositeDisposable.add(iLinkRestaurantAPI.updateTokenToServer(headers,newToken )
             .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<TokenModel>() {

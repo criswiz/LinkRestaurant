@@ -35,6 +35,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -85,8 +87,10 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void loadFavoriteByRestaurant() {
-        compositeDisposable.add(iLinkRestaurantAPI.getFavoriteByRestaurant(Common.API_KEY,
-                Common.currentUser.getFbid(),
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+        compositeDisposable.add(iLinkRestaurantAPI.getFavoriteByRestaurant(headers,
                 Common.currentRestaurant.getId())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
@@ -213,7 +217,10 @@ public class MenuActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             //request category by restaurant Id
-            compositeDisposable.add(iLinkRestaurantAPI.getCategories(Common.API_KEY,event.getRestaurant().getId())
+
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+            compositeDisposable.add(iLinkRestaurantAPI.getCategories(headers,event.getRestaurant().getId())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(menuModel -> {

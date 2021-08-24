@@ -28,7 +28,9 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,7 +77,9 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
         holder.setListener(new IOnRecyclerViewClickListener() {
             @Override
             public void onClick(View view, int position) {
-                compositeDisposable.add(iLinkRestaurantAPI.getFoodById(Common.API_KEY,
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                compositeDisposable.add(iLinkRestaurantAPI.getFoodById(headers,
                         favoriteList.get(position).getFoodId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -90,7 +94,7 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
                                 Common.currentRestaurant.setId(favoriteList.get(position).getRestaurantId());
                                 Common.currentRestaurant.setName(favoriteList.get(position).getRestaurantName());
 
-                                compositeDisposable.add(iLinkRestaurantAPI.getRestaurantById(Common.API_KEY,
+                                compositeDisposable.add(iLinkRestaurantAPI.getRestaurantById(headers,
                                         String.valueOf(favoriteList.get(position).getRestaurantId()))
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())

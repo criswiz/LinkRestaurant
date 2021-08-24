@@ -34,6 +34,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dmax.dialog.SpotsDialog;
@@ -112,7 +115,10 @@ public class FoodListActivity extends AppCompatActivity {
     private void startSearchFood(String query) {
         dialog.show();
 
-        compositeDisposable.add(iLinkRestaurantAPI.searchFood(Common.API_KEY,
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+        compositeDisposable.add(iLinkRestaurantAPI.searchFood(headers,
                 query,
                 selectedCategory.getId())
         .subscribeOn(Schedulers.io())
@@ -198,7 +204,11 @@ public class FoodListActivity extends AppCompatActivity {
 
             dialog.show();
 
-            compositeDisposable.add(iLinkRestaurantAPI.getFoodOfMenu(Common.API_KEY,
+
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+
+            compositeDisposable.add(iLinkRestaurantAPI.getFoodOfMenu(headers,
                     event.getCategory().getId())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

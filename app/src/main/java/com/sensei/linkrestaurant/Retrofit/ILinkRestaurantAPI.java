@@ -5,6 +5,7 @@ import com.sensei.linkrestaurant.Model.CreateOrderModel;
 import com.sensei.linkrestaurant.Model.FavoriteModel;
 import com.sensei.linkrestaurant.Model.FavoriteOnlyIdModel;
 import com.sensei.linkrestaurant.Model.FoodModel;
+import com.sensei.linkrestaurant.Model.GetKeyModel;
 import com.sensei.linkrestaurant.Model.MaxOrderModel;
 import com.sensei.linkrestaurant.Model.MenuModel;
 import com.sensei.linkrestaurant.Model.OrderModel;
@@ -15,92 +16,93 @@ import com.sensei.linkrestaurant.Model.UpdateOrderModel;
 import com.sensei.linkrestaurant.Model.UpdateUserModel;
 import com.sensei.linkrestaurant.Model.UserModel;
 
+import java.util.Map;
+
 import io.reactivex.Observable;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.HeaderMap;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface ILinkRestaurantAPI {
+
+    //GET KEY
+    @GET("getkey")
+    Observable<GetKeyModel> getKey(@Query("fbid") String fbid);
+
     @GET("user")
-    Observable<UserModel> getUser(@Query("key") String apiKey,
-                                  @Query("fbid") String fbid);
+    Observable<UserModel> getUser(@HeaderMap Map<String, String> headers);
 
     @GET("restaurant")
-    Observable<RestaurantModel> getRestaurant(@Query("key") String apiKey);
+    Observable<RestaurantModel> getRestaurant(@HeaderMap Map<String, String> headers);
 
     @GET("restaurantById")
-    Observable<RestaurantModel> getRestaurantById(@Query("key") String apiKey,
+    Observable<RestaurantModel> getRestaurantById(@HeaderMap Map<String, String> headers,
                                                       @Query("restaurantId") String id);
 
     @GET("nearbyrestaurant")
-    Observable<RestaurantModel> getNearbyRestaurant(@Query("key") String apiKey,
+    Observable<RestaurantModel> getNearbyRestaurant(@HeaderMap Map<String, String> headers,
                                                     @Query("lat") Double lat,
                                                     @Query("lng") Double lng,
                                                     @Query("distance") int distance);
 
     @GET("menu")
-    Observable<MenuModel> getCategories(@Query("key") String apiKey,
+    Observable<MenuModel> getCategories(@HeaderMap Map<String, String> headers,
                                         @Query("restaurantId") int restaurantId);
 
     @GET("food")
-    Observable<FoodModel> getFoodOfMenu(@Query("key") String apiKey,
+    Observable<FoodModel> getFoodOfMenu(@HeaderMap Map<String, String> headers,
                                         @Query("menuId") int menuId);
 
     @GET("foodById")
-    Observable<FoodModel> getFoodById(@Query("key") String apiKey,
+    Observable<FoodModel> getFoodById(@HeaderMap Map<String, String> headers,
                                       @Query("foodId") int foodId);
 
     @GET("searchFood")
-    Observable<FoodModel> searchFood(@Query("key") String apiKey,
+    Observable<FoodModel> searchFood(@HeaderMap Map<String, String> headers,
                                      @Query("foodName") String foodName,
                                      @Query("menuId") int menuId);
 
     @GET("size")
-    Observable<SizeModel> getSizeOfFood(@Query("key") String apiKey,
+    Observable<SizeModel> getSizeOfFood(@HeaderMap Map<String, String> headers,
                                         @Query("foodId") int foodId);
 
     @GET("addon")
-    Observable<AddonModel> getAddonOfFood(@Query("key") String apiKey,
+    Observable<AddonModel> getAddonOfFood(@HeaderMap Map<String, String> headers,
                                           @Query("foodId") int foodId);
 
     @GET("favorite")
-    Observable<FavoriteModel> getFavoriteByUser (@Query("key") String apiKey,
-                                                 @Query("fbid") String fbid);
+    Observable<FavoriteModel> getFavoriteByUser (@HeaderMap Map<String, String> headers);
 
     @GET("favoriteByID")
-    Observable<FavoriteOnlyIdModel> getFavoriteByRestaurant (@Query("key") String apiKey,
-                                                             @Query("fbid") String fbid,
+    Observable<FavoriteOnlyIdModel> getFavoriteByRestaurant (@HeaderMap Map<String, String> headers,
                                                              @Query("restaurantId") int restaurantId);
 
     @GET("order")
-    Observable<OrderModel> getOrder (@Query("key") String apiKey,
-                                     @Query("orderFBID") String orderFBID,
+    Observable<OrderModel> getOrder (@HeaderMap Map<String, String> headers,
                                      @Query("from") int from,
                                      @Query("to") int to);
 
     @GET("maxorder")
-    Observable<MaxOrderModel> getMaxOrder (@Query("key") String apiKey,
-                                           @Query("orderFBID") String orderFBID);
+    Observable<MaxOrderModel> getMaxOrder (@HeaderMap Map<String, String> headers);
 
     @GET("token")
-    Observable<TokenModel> getToken (@Query("key") String apiKey,
-                                           @Query("FBID") String FBID);
+    Observable<TokenModel> getToken (@HeaderMap Map<String, String> headers);
 
     //POST
     @POST("token")
     @FormUrlEncoded
-    Observable<TokenModel> updateTokenToServer(@Field("key") String apiKey,
-                                       @Field("orderFBID") String orderFBID,
+    Observable<TokenModel> updateTokenToServer(@HeaderMap Map<String, String> headers,
                                        @Field("orderPhone") String token);
 
 
     @POST("createOrder")
     @FormUrlEncoded
-    Observable<CreateOrderModel> createOrder(@Field("key") String apiKey,
-                                             @Field("orderFBID") String orderFBID,
+    Observable<CreateOrderModel> createOrder(@HeaderMap Map<String, String> headers,
                                              @Field("orderPhone") String orderPhone,
                                              @Field("orderName") String orderName,
                                              @Field("orderAddress") String orderAddress,
@@ -113,22 +115,20 @@ public interface ILinkRestaurantAPI {
 
     @POST("updateOrder")
     @FormUrlEncoded
-    Observable<UpdateOrderModel> updateOrder(@Field("key") String apiKey,
+    Observable<UpdateOrderModel> updateOrder(@HeaderMap Map<String, String> headers,
                                              @Field("orderId") String orderId,
                                              @Field("orderDetail") String orderDetail);
 
     @POST("user")
     @FormUrlEncoded
-    Observable<UpdateUserModel> updateUserInfo(@Field("key") String apiKey,
+    Observable<UpdateUserModel> updateUserInfo(@HeaderMap Map<String, String> headers,
                                                @Field("userPhone") String userPhone,
                                                @Field("userName") String userName,
-                                               @Field("userAddress") String userAddress,
-                                               @Field("fbid") String fbid);
+                                               @Field("userAddress") String userAddress);
 
     @POST("favorite")
     @FormUrlEncoded
-    Observable<FavoriteModel> insertFavorite   (@Field("key") String apiKey,
-                                                @Field("fbid") String fbid,
+    Observable<FavoriteModel> insertFavorite   (@HeaderMap Map<String, String> headers,
                                                 @Field("foodId") int foodId,
                                                 @Field("retaurantId") int restaurantId,
                                                 @Field("restaurantName") String restaurantName,
@@ -138,8 +138,7 @@ public interface ILinkRestaurantAPI {
 
     //DELETE
     @DELETE("favorite")
-    Observable<FavoriteModel> removeFavorite(@Query("key") String apiKey,
-                                             @Query("fbid") String fbid,
+    Observable<FavoriteModel> removeFavorite(@HeaderMap Map<String, String> headers,
                                              @Query("foodId") int foodId,
                                              @Query("restaurantId") int restaurantId);
 }

@@ -43,7 +43,9 @@ import com.sensei.linkrestaurant.databinding.ActivityNearbyReataurantBinding;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -134,7 +136,9 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
     private void requestNearbyRestaurant(double latitude, double longitude, int distance) {
         dialog.show();
 
-        compositeDisposable.add(iLinkRestaurantAPI.getNearbyRestaurant(Common.API_KEY, latitude,longitude,distance)
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+        compositeDisposable.add(iLinkRestaurantAPI.getNearbyRestaurant(headers, latitude,longitude,distance)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Consumer<RestaurantModel>() {
@@ -233,7 +237,10 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
             public void onInfoWindowClick(Marker marker) {
                 String id = marker.getTitle().substring(0, marker.getTitle().indexOf("."));
                 if (!TextUtils.isEmpty(id)){
-                    compositeDisposable.add(iLinkRestaurantAPI.getRestaurantById(Common.API_KEY,id)
+
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                    compositeDisposable.add(iLinkRestaurantAPI.getRestaurantById(headers,id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Consumer<RestaurantModel>() {

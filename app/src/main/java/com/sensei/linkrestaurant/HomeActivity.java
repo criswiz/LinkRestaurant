@@ -36,7 +36,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -46,7 +48,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import ss.com.bannerslider.Slider;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -79,7 +81,7 @@ public class HomeActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_log_out,
+                R.id.nav_home, R.id.nav_log_out,
                 R.id.nav_fav, R.id.nav_nearby, R.id.order_history, R.id.update_information)
                 .setDrawerLayout(drawer)
                 .build();
@@ -102,8 +104,10 @@ public class HomeActivity extends AppCompatActivity {
     private void loadRestaurant() {
         dialog.show();
 
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
         compositeDisposable.add(
-                iLinkRestaurantAPI.getRestaurant(Common.API_KEY)
+                iLinkRestaurantAPI.getRestaurant(headers)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(restaurantModel -> {
@@ -135,7 +139,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
         if (id == R.id.nav_log_out){
@@ -149,7 +153,7 @@ public class HomeActivity extends AppCompatActivity {
         }else if (id == R.id.nav_fav){
             startActivity(new Intent(HomeActivity.this, FavoriteActivity.class));
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     private void signOut() {
@@ -226,6 +230,5 @@ public class HomeActivity extends AppCompatActivity {
     private void displayBanner(List<Restaurant> restaurantList) {
         banner_slider.setAdapter(new RestaurantSliderAdapter(restaurantList));
     }
-
 
 }

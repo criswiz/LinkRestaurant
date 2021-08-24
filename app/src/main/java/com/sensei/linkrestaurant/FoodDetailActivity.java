@@ -43,6 +43,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dmax.dialog.SpotsDialog;
@@ -185,8 +188,11 @@ public class FoodDetailActivity extends AppCompatActivity {
             Picasso.get().load(event.getFood().getImage()).into(img_food_detail);
 
             if (event.getFood().isSize() && event.getFood().isAddon()){
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                 compositeDisposable.add(
-                        iLinkRestaurantAPI.getSizeOfFood(Common.API_KEY, event.getFood().getId())
+                        iLinkRestaurantAPI.getSizeOfFood(headers, event.getFood().getId())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(sizeModel -> {
@@ -195,7 +201,7 @@ public class FoodDetailActivity extends AppCompatActivity {
                                             //load addon after load size
                                             dialog.show();
                                             compositeDisposable.add(
-                                                    iLinkRestaurantAPI.getAddonOfFood(Common.API_KEY, event.getFood().getId())
+                                                    iLinkRestaurantAPI.getAddonOfFood(headers, event.getFood().getId())
                                                             .subscribeOn(Schedulers.io())
                                                             .observeOn(AndroidSchedulers.mainThread())
                                                             .subscribe(addonModel -> {
@@ -217,8 +223,11 @@ public class FoodDetailActivity extends AppCompatActivity {
                 if (event.getFood().isSize()){
                     //load size and addon from server
                     dialog.show();
+
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                     compositeDisposable.add(
-                            iLinkRestaurantAPI.getSizeOfFood(Common.API_KEY, event.getFood().getId())
+                            iLinkRestaurantAPI.getSizeOfFood(headers, event.getFood().getId())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(sizeModel -> {
@@ -233,8 +242,11 @@ public class FoodDetailActivity extends AppCompatActivity {
                 }
                 if (event.getFood().isAddon()){
                     dialog.show();
+
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                     compositeDisposable.add(
-                            iLinkRestaurantAPI.getAddonOfFood(Common.API_KEY, event.getFood().getId())
+                            iLinkRestaurantAPI.getAddonOfFood(headers, event.getFood().getId())
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(addonModel -> {

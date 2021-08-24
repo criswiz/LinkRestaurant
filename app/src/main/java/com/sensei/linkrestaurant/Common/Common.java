@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 public class Common {
-    public static final String API_RESTAURANT_ENDPOINT = "https://ilinkrestaurant-android-app.azurewebsites.net";
-    public static final String API_KEY = "1234";
+    public static final String API_RESTAURANT_ENDPOINT = "https://ilinkrestaurant-android-app.azurewebsites.net/";
+    public static String API_KEY = "";
     public static final int DEFAULT_COLUMN_COUNT = 1;
     public static final int FULL_WIDTH_COLUMN = 1;
     public static final String REMEMBER_FBID = "REMEMBER FBID";
@@ -115,5 +115,11 @@ public class Common {
         Notification nNotification = builder.build();
 
         notificationManager.notify(notiId,nNotification);
+    }
+
+    public static String buildJWT(String apiKey) {
+        return new StringBuilder("Bearer")
+                .append(" ")
+                .append(apiKey).toString();
     }
 }

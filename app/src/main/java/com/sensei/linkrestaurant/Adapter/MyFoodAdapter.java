@@ -31,7 +31,9 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -96,8 +98,9 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                 ImageView fav = (ImageView) view;
                 if ((Boolean) fav.getTag()){
                     //if tag = true favorite item clicked
-                    compositeDisposable.add(iLinkRestaurantAPI.removeFavorite(Common.API_KEY,
-                            Common.currentUser.getFbid(),
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                    compositeDisposable.add(iLinkRestaurantAPI.removeFavorite(headers,
                             foodList.get(position).getId(),
                             Common.currentRestaurant.getId())
                     .subscribeOn(Schedulers.io())
@@ -121,8 +124,9 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                     }));
                 }else {
                     //if tag = true favorite item clicked
-                    compositeDisposable.add(iLinkRestaurantAPI.insertFavorite(Common.API_KEY,
-                            Common.currentUser.getFbid(),
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                    compositeDisposable.add(iLinkRestaurantAPI.insertFavorite(headers,
                             foodList.get(position).getId(),
                             Common.currentRestaurant.getId(),
                             Common.currentRestaurant.getName(),

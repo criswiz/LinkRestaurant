@@ -18,6 +18,9 @@ import com.sensei.linkrestaurant.Model.FavoriteModel;
 import com.sensei.linkrestaurant.Retrofit.ILinkRestaurantAPI;
 import com.sensei.linkrestaurant.Retrofit.RetrofitClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import dmax.dialog.SpotsDialog;
@@ -69,8 +72,10 @@ public class FavoriteActivity extends AppCompatActivity {
     private void loadFavoriteItems() {
         dialog.show();
 
-        compositeDisposable.add(iLinkRestaurantAPI.getFavoriteByUser(Common.API_KEY,
-                Common.currentUser.getFbid())
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+        compositeDisposable.add(iLinkRestaurantAPI.getFavoriteByUser(headers)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Consumer<FavoriteModel>() {

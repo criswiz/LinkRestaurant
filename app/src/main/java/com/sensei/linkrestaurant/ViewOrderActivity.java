@@ -21,7 +21,9 @@ import com.sensei.linkrestaurant.Retrofit.ILinkRestaurantAPI;
 import com.sensei.linkrestaurant.Retrofit.RetrofitClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,8 +70,10 @@ public class ViewOrderActivity extends AppCompatActivity {
     private void getMaxOrder() {
         dialog.show();
 
-        compositeDisposable.add(iLinkRestaurantAPI.getMaxOrder(Common.API_KEY,
-                Common.currentUser.getFbid())
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+        compositeDisposable.add(iLinkRestaurantAPI.getMaxOrder(headers)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<MaxOrderModel>() {
@@ -94,8 +98,9 @@ public class ViewOrderActivity extends AppCompatActivity {
     private void getAllOrder(int from, int to) {
         dialog.show();
 
-        compositeDisposable.add(iLinkRestaurantAPI.getOrder(Common.API_KEY,
-                Common.currentUser.getFbid(),from,to)
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+        compositeDisposable.add(iLinkRestaurantAPI.getOrder(headers,from,to)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(new Consumer<OrderModel>() {

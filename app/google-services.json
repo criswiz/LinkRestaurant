@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "141716464638-ebmrniu7o9pjg6pdfj8i0atrf8f6e5ko.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sensei.linkrestaurant",
+            "certificate_hash": "e9508532a21e5fec1d9bbbce7775f2c098a368d6"
+          }
+        },
+        {
           "client_id": "141716464638-fatjcto2h9g31clvsdjuk2brb323c7hd.apps.googleusercontent.com",
           "client_type": 3
         }

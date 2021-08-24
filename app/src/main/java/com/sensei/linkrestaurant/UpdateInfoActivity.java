@@ -14,15 +14,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.sensei.linkrestaurant.Common.Common;
 import com.sensei.linkrestaurant.Retrofit.ILinkRestaurantAPI;
 import com.sensei.linkrestaurant.Retrofit.RetrofitClient;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import dmax.dialog.SpotsDialog;
@@ -86,18 +85,20 @@ public class UpdateInfoActivity extends AppCompatActivity {
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 if (user != null){
-                    compositeDisposable.add(iLinkRestaurantAPI.updateUserInfo(Common.API_KEY,
+
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                    compositeDisposable.add(iLinkRestaurantAPI.updateUserInfo(headers,
                             user.getPhoneNumber(),
                             edt_username.getText().toString(),
-                            edt_userAddress.getText().toString(),
-                            user.getUid())
+                            edt_userAddress.getText().toString())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(updateUserModel -> {
 
                                 if (updateUserModel.isSuccess()) {
                                     // If user has been update, just refresh again
-                                    compositeDisposable.add(iLinkRestaurantAPI.getUser(Common.API_KEY, user.getUid())
+                                    compositeDisposable.add(iLinkRestaurantAPI.getUser(headers)
                                             .subscribeOn(Schedulers.io())
                                             .observeOn(AndroidSchedulers.mainThread())
                                             .subscribe(userModel -> {
@@ -108,7 +109,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
                                                     finish();
                                                 }
                                                 else {
-                                                    Toast.makeText(UpdateInfoActivity.this, "[[GET USER RESULT]]"+userModel.getResult().get(0), Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(UpdateInfoActivity.this, "[GET USER RESULT]"+userModel.getResult().get(0), Toast.LENGTH_SHORT).show();
                                                 }
                                                 dialog.dismiss();
 

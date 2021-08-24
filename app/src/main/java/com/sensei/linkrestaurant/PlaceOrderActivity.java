@@ -49,7 +49,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -242,9 +244,11 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                     @Override
                     public void accept(List<CartItem> cartItems) throws Exception {
                         //Get order number from server
+
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                         compositeDisposable.add(
-                                iLinkRestaurantAPI.createOrder(Common.API_KEY,
-                                        Common.currentUser.getFbid(),
+                                iLinkRestaurantAPI.createOrder(headers,
                                         Common.currentUser.getUserPhone(),
                                         Common.currentUser.getName(),
                                         address,
@@ -260,7 +264,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                     @Override
                                     public void accept(CreateOrderModel createOrderModel) throws Exception {
                                         if (createOrderModel.isSuccess()){
-                                        compositeDisposable.add(iLinkRestaurantAPI.updateOrder(Common.API_KEY,
+                                        compositeDisposable.add(iLinkRestaurantAPI.updateOrder(headers,
                                                 String.valueOf(createOrderModel.getResult().get(0).getOrderNumber()),
                                                 new Gson().toJson(cartItems))
                                                 .subscribeOn(Schedulers.io())
@@ -403,9 +407,11 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                             @Override
                                             public void accept(List<CartItem> cartItems) throws Exception {
                                                 //Get order number from server
+
+                                                Map<String, String> headers = new HashMap<>();
+                                                headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                                                 compositeDisposable.add(
-                                                        iLinkRestaurantAPI.createOrder(Common.API_KEY,
-                                                                Common.currentUser.getFbid(),
+                                                        iLinkRestaurantAPI.createOrder(headers,
                                                                 Common.currentUser.getUserPhone(),
                                                                 Common.currentUser.getName(),
                                                                 address,
@@ -421,7 +427,10 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                     @Override
                                                                     public void accept(CreateOrderModel createOrderModel) throws Exception {
                                                                         if (createOrderModel.isSuccess()){
-                                                                            compositeDisposable.add(iLinkRestaurantAPI.updateOrder(Common.API_KEY,
+
+                                                                            Map<String, String> headers = new HashMap<>();
+                                                                            headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                                                                            compositeDisposable.add(iLinkRestaurantAPI.updateOrder(headers,
                                                                                     String.valueOf(createOrderModel.getResult().get(0).getOrderNumber()),
                                                                                     new Gson().toJson(cartItems))
                                                                                     .subscribeOn(Schedulers.io())
