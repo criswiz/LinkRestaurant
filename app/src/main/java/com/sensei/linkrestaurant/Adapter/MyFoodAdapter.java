@@ -78,6 +78,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         holder.txt_food_name.setText(foodList.get(position).getName());
         holder.txt_food_price.setText(new StringBuilder(context.getString(R.string.money_sign)).append(foodList.get(position).getPrice()));
 
+
         //Check favorite
         if (Common.currentFavOfRestaurant != null && Common.currentFavOfRestaurant.size() > 0){
             if (Common.checkFavorite(foodList.get(position).getId())){
