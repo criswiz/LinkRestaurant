@@ -308,11 +308,15 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                                                 .subscribe(new Consumer<FCMResponse>() {
                                                                                                     @Override
                                                                                                     public void accept(FCMResponse fcmResponse) throws Exception {
-                                                                                                        Toast.makeText(PlaceOrderActivity.this, "Order Placed", Toast.LENGTH_SHORT).show();
-                                                                                                        Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
-                                                                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                                                        startActivity(intent);
-                                                                                                        finish();
+                                                                                                        if (fcmResponse.getMessage_id() > 0){
+                                                                                                            Toast.makeText(PlaceOrderActivity.this, "Order Placed", Toast.LENGTH_SHORT).show();
+                                                                                                            Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                            startActivity(intent);
+                                                                                                            finish();
+                                                                                                        }else{
+
+                                                                                                        }
                                                                                                     }
                                                                                                 }, new Consumer<Throwable>() {
                                                                                                     @Override

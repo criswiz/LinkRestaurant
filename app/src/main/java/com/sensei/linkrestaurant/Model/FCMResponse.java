@@ -6,6 +6,7 @@ public class FCMResponse {
     private long multicast_Id;
     private int success, failure, canonical_ids;
     private List<FCMResult> results;
+    private long message_id;
 
     public FCMResponse() {
     }
@@ -48,5 +49,13 @@ public class FCMResponse {
 
     public void setResults(List<FCMResult> results) {
         this.results = results;
+    }
+
+    public long getMessage_id() {
+        return message_id;
+    }
+
+    public void setMessage_id(long message_id) {
+        this.message_id = message_id;
     }
 }
