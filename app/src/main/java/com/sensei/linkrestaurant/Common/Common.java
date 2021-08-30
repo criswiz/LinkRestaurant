@@ -122,4 +122,12 @@ public class Common {
                 .append(" ")
                 .append(apiKey).toString();
     }
+
+    public static String getTopicChannel(int id) {
+        return new StringBuilder("Restaurant_1").append(id).toString();
+    }
+
+    public static String createTopicSender(String topicChannel) {
+        return new StringBuilder("/topics/").append(topicChannel).toString();
+    }
 }
