@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/drawable/apply_button.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/drawable/border_button.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.22870370370370371" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/drawable/ic_baseline_clear_primary_24.xml" value="0.22870370370370371" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/drawable/ic_baseline_drag_handle_24.xml" value="0.22870370370370371" />
@@ -15,6 +17,7 @@
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_main.xml" value="0.17222222222222222" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_nearby_reataurant.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_place_order.xml" value="0.17222222222222222" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_scanqr.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_view_order.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/bt_border_color.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_add_new_address.xml" value="0.18611111111111112" />

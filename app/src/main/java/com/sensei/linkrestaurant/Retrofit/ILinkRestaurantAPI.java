@@ -2,6 +2,7 @@ package com.sensei.linkrestaurant.Retrofit;
 
 import com.sensei.linkrestaurant.Model.AddonModel;
 import com.sensei.linkrestaurant.Model.CreateOrderModel;
+import com.sensei.linkrestaurant.Model.DiscountModel;
 import com.sensei.linkrestaurant.Model.FavoriteModel;
 import com.sensei.linkrestaurant.Model.FavoriteOnlyIdModel;
 import com.sensei.linkrestaurant.Model.FoodModel;
@@ -33,6 +34,14 @@ public interface ILinkRestaurantAPI {
     //GET KEY
     @GET("getkey")
     Observable<GetKeyModel> getKey(@Query("fbid") String fbid);
+
+    @GET("discount")
+    Observable<DiscountModel> getDiscount(@HeaderMap Map<String, String> headers,
+                                          @Query("code") String code);
+
+    @GET("checkdiscount")
+    Observable<DiscountModel> checkDiscount(@HeaderMap Map<String, String> headers,
+                                          @Query("code") String code);
 
     @GET("user")
     Observable<UserModel> getUser(@HeaderMap Map<String, String> headers);
@@ -94,6 +103,11 @@ public interface ILinkRestaurantAPI {
     Observable<TokenModel> getToken (@HeaderMap Map<String, String> headers);
 
     //POST
+    @POST("applydiscount")
+    @FormUrlEncoded
+    Observable<DiscountModel> insertDiscount(@HeaderMap Map<String, String> headers,
+                                               @Field("orderPhone") String token);
+
     @POST("token")
     @FormUrlEncoded
     Observable<TokenModel> updateTokenToServer(@HeaderMap Map<String, String> headers,
@@ -135,6 +149,8 @@ public interface ILinkRestaurantAPI {
                                                 @Field("foodName") String foodName,
                                                 @Field("foodImage") String foodImage,
                                                 @Field("price") double price);
+
+
 
     //DELETE
     @DELETE("favorite")

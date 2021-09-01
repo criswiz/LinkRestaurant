@@ -66,5 +66,10 @@
     <string name="orderDate">05/14/2021</string>
     <string name="num_of_item_2">Num of Item 2</string>
     <string name="title_activity_nearby_reataurant">NearbyReataurant</string>
+    <string name="discount_percent">(-10%)</string>
+    <string name="discount">Discount</string>
+    <string name="enter_or_scan_your_code">Enter or Scan your code</string>
+    <string name="scan">Scan</string>
+    <string name="apply">Apply</string>
 
 </resources>

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,6 +34,8 @@ import com.sensei.linkrestaurant.Database.LocalCartDataSource;
 import com.sensei.linkrestaurant.Model.BraintreeToken;
 import com.sensei.linkrestaurant.Model.BraintreeTransaction;
 import com.sensei.linkrestaurant.Model.CreateOrderModel;
+import com.sensei.linkrestaurant.Model.Discount;
+import com.sensei.linkrestaurant.Model.DiscountModel;
 import com.sensei.linkrestaurant.Model.EventBus.SendTotalCashEvent;
 import com.sensei.linkrestaurant.Model.FCMResponse;
 import com.sensei.linkrestaurant.Model.FCMSendData;
@@ -70,6 +73,19 @@ import io.reactivex.schedulers.Schedulers;
 public class PlaceOrderActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     private static final int REQUEST_BRAINTREE_CODE = 7777;
+    private static final int SCAN_QR_PERMISSION = 0000;
+
+    boolean isUseDiscount = false;
+    String discountUser = "";
+
+    @BindView(R.id.btn_scan_qr)
+    Button btn_scan_qr;
+    @BindView(R.id.btn_apply)
+    Button btn_apply;
+    @BindView(R.id.edt_discount_code)
+    EditText edt_discount_code;
+    @BindView(R.id.txt_discount_cash)
+    TextView txt_discount_cash;
     @BindView(R.id.edt_date)
     EditText edt_date;
     @BindView(R.id.txt_total_cash)
@@ -145,6 +161,75 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        btn_scan_qr.setOnClickListener(v ->
+                startActivityForResult(new Intent(PlaceOrderActivity.this, ScanQRActivity.class), SCAN_QR_PERMISSION)
+        );
+
+        btn_apply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                compositeDisposable.add(
+                        iLinkRestaurantAPI.checkDiscount(headers, edt_discount_code.getText().toString())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<DiscountModel>() {
+                            @Override
+                            public void accept(DiscountModel discountModel) throws Exception {
+                                if (discountModel.isSuccess()){
+                                    Map<String, String> headers = new HashMap<>();
+                                    headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                                    compositeDisposable.add(
+                                            iLinkRestaurantAPI.getDiscount(headers, edt_discount_code.getText().toString())
+                                                    .subscribeOn(Schedulers.io())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe(new Consumer<DiscountModel>() {
+                                                        @Override
+                                                        public void accept(DiscountModel discountModel) throws Exception {
+                                                            if (discountModel.isSuccess()){
+                                                                Discount discount = discountModel.getResult().get(0);
+                                                                Double total_cash = Double.valueOf(txt_total_cash.getText().toString());
+                                                                Double discount_value = (total_cash * discount.getValue())/100;
+                                                                Double final_cash = total_cash - discount_value;
+
+                                                                txt_discount_cash.setText(new StringBuilder("(-")
+                                                                .append(discount.getValue())
+                                                                        .append("%) "));
+
+                                                                txt_discount_cash.setVisibility(View.VISIBLE);
+
+                                                                txt_total_cash.setText(new StringBuilder("")
+                                                                        .append(final_cash));
+
+                                                                isUseDiscount = true;
+                                                                discountUser = edt_discount_code.getText().toString();
+                                                            }
+                                                            dialog.dismiss();
+                                                        }
+                                                    }, new Consumer<Throwable>() {
+                                                        @Override
+                                                        public void accept(Throwable throwable) throws Exception {
+                                                            Toast.makeText(PlaceOrderActivity.this, ""+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            dialog.dismiss();
+                                                        }
+                                                    }));
+                                }else {
+                                    Toast.makeText(PlaceOrderActivity.this, "You already use this code", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                Toast.makeText(PlaceOrderActivity.this, ""+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        }));
+            }
+        });
 
         btn_add_new_address.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -281,60 +366,134 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                         //Get order number and update to order detail
                                                         //First select cart items
                                                         if (updateOrderModel.isSuccess()){
-                                                            //update cart and clear and show success message
-                                                            cartDataSource.cleanCart(Common.currentUser.getFbid(),
-                                                                    Common.currentRestaurant.getId())
-                                                                    .subscribeOn(Schedulers.io())
-                                                                    .observeOn(AndroidSchedulers.mainThread())
-                                                                    .subscribe(new SingleObserver<Integer>() {
-                                                                        @Override
-                                                                        public void onSubscribe(@NonNull Disposable d) {
+                                                            if (isUseDiscount && !TextUtils.isEmpty(discountUser)){
 
-                                                                        }
+                                                                compositeDisposable.add(iLinkRestaurantAPI.insertDiscount(headers,
+                                                                        discountUser)
+                                                                        .subscribeOn(Schedulers.io())
+                                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                                        .subscribe(new Consumer<DiscountModel>() {
+                                                                            @Override
+                                                                            public void accept(DiscountModel discountModel) throws Exception {
+                                                                                if (discountModel.isSuccess()){
+                                                                                    cartDataSource.cleanCart(Common.currentUser.getFbid(),
+                                                                                            Common.currentRestaurant.getId())
+                                                                                            .subscribeOn(Schedulers.io())
+                                                                                            .observeOn(AndroidSchedulers.mainThread())
+                                                                                            .subscribe(new SingleObserver<Integer>() {
+                                                                                                @Override
+                                                                                                public void onSubscribe(@NonNull Disposable d) {
 
-                                                                        @Override
-                                                                        public void onSuccess(@NonNull Integer integer) {
-                                                                            Map<String, String> dataSend = new HashMap<>();
-                                                                            dataSend.put(Common.NOTIFI_TITLE, "New Order");
-                                                                            dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
+                                                                                                }
 
-                                                                            FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
-                                                                                    Common.currentRestaurant.getId()
-                                                                            )), dataSend);
+                                                                                                @Override
+                                                                                                public void onSuccess(@NonNull Integer integer) {
+                                                                                                    Map<String, String> dataSend = new HashMap<>();
+                                                                                                    dataSend.put(Common.NOTIFI_TITLE, "New Order");
+                                                                                                    dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
 
-                                                                            compositeDisposable.add(ifmcService.sendNotification(sendData)
-                                                                                                .subscribeOn(Schedulers.io())
-                                                                                                .observeOn(AndroidSchedulers.mainThread())
-                                                                                                .subscribe(new Consumer<FCMResponse>() {
-                                                                                                    @Override
-                                                                                                    public void accept(FCMResponse fcmResponse) throws Exception {
-                                                                                                        if (fcmResponse.getMessage_id() > 0){
-                                                                                                            Toast.makeText(PlaceOrderActivity.this, "Order Placed", Toast.LENGTH_SHORT).show();
-                                                                                                            Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
-                                                                                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                                                            startActivity(intent);
-                                                                                                            finish();
-                                                                                                        }else{
+                                                                                                    FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
+                                                                                                            Common.currentRestaurant.getId()
+                                                                                                    )), dataSend);
 
-                                                                                                        }
-                                                                                                    }
-                                                                                                }, new Consumer<Throwable>() {
-                                                                                                    @Override
-                                                                                                    public void accept(Throwable throwable) throws Exception {
-                                                                                                        Toast.makeText(PlaceOrderActivity.this, "Order Placed but can't send notification to server"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                                                        Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
-                                                                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                                                        startActivity(intent);
-                                                                                                        finish();
-                                                                                                    }
-                                                                                                }));
-                                                                        }
+                                                                                                    compositeDisposable.add(ifmcService.sendNotification(sendData)
+                                                                                                            .subscribeOn(Schedulers.io())
+                                                                                                            .observeOn(AndroidSchedulers.mainThread())
+                                                                                                            .subscribe(new Consumer<FCMResponse>() {
+                                                                                                                @Override
+                                                                                                                public void accept(FCMResponse fcmResponse) throws Exception {
+                                                                                                                    if (fcmResponse.getMessage_id() > 0){
+                                                                                                                        Toast.makeText(PlaceOrderActivity.this, "Order Placed", Toast.LENGTH_SHORT).show();
+                                                                                                                        Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                                        startActivity(intent);
+                                                                                                                        finish();
+                                                                                                                    }else{
 
-                                                                        @Override
-                                                                        public void onError(@NonNull Throwable e) {
-                                                                            Toast.makeText(PlaceOrderActivity.this, "[CLEAR CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                        }
-                                                                    });
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }, new Consumer<Throwable>() {
+                                                                                                                @Override
+                                                                                                                public void accept(Throwable throwable) throws Exception {
+                                                                                                                    Toast.makeText(PlaceOrderActivity.this, "Order Placed but can't send notification to server"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                                    Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                                    startActivity(intent);
+                                                                                                                    finish();
+                                                                                                                }
+                                                                                                            }));
+                                                                                                }
+
+                                                                                                @Override
+                                                                                                public void onError(@NonNull Throwable e) {
+                                                                                                    Toast.makeText(PlaceOrderActivity.this, "[CLEAR CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                }
+                                                                                            });
+
+                                                                                }
+                                                                            }
+                                                                        }, new Consumer<Throwable>() {
+                                                                            @Override
+                                                                            public void accept(Throwable throwable) throws Exception {
+                                                                                Toast.makeText(PlaceOrderActivity.this, ""+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        }));
+                                                            }else{
+                                                                //update cart and clear and show success message
+                                                                cartDataSource.cleanCart(Common.currentUser.getFbid(),
+                                                                        Common.currentRestaurant.getId())
+                                                                        .subscribeOn(Schedulers.io())
+                                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                                        .subscribe(new SingleObserver<Integer>() {
+                                                                            @Override
+                                                                            public void onSubscribe(@NonNull Disposable d) {
+
+                                                                            }
+
+                                                                            @Override
+                                                                            public void onSuccess(@NonNull Integer integer) {
+                                                                                Map<String, String> dataSend = new HashMap<>();
+                                                                                dataSend.put(Common.NOTIFI_TITLE, "New Order");
+                                                                                dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
+
+                                                                                FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
+                                                                                        Common.currentRestaurant.getId()
+                                                                                )), dataSend);
+
+                                                                                compositeDisposable.add(ifmcService.sendNotification(sendData)
+                                                                                        .subscribeOn(Schedulers.io())
+                                                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                                                        .subscribe(new Consumer<FCMResponse>() {
+                                                                                            @Override
+                                                                                            public void accept(FCMResponse fcmResponse) throws Exception {
+                                                                                                if (fcmResponse.getMessage_id() > 0){
+                                                                                                    Toast.makeText(PlaceOrderActivity.this, "Order Placed", Toast.LENGTH_SHORT).show();
+                                                                                                    Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                    startActivity(intent);
+                                                                                                    finish();
+                                                                                                }else{
+
+                                                                                                }
+                                                                                            }
+                                                                                        }, new Consumer<Throwable>() {
+                                                                                            @Override
+                                                                                            public void accept(Throwable throwable) throws Exception {
+                                                                                                Toast.makeText(PlaceOrderActivity.this, "Order Placed but can't send notification to server"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                startActivity(intent);
+                                                                                                finish();
+                                                                                            }
+                                                                                        }));
+                                                                            }
+
+                                                                            @Override
+                                                                            public void onError(@NonNull Throwable e) {
+                                                                                Toast.makeText(PlaceOrderActivity.this, "[CLEAR CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                            }
+                                                                        });
+                                                            }
                                                         }
                                                         if (dialog.isShowing()){
                                                             dialog.dismiss();
@@ -476,57 +635,136 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                                             //Get order number and update to order detail
                                                                                             //First select cart items
                                                                                             if (updateOrderModel.isSuccess()){
-                                                                                                //update cart and clear and show success message
-                                                                                                cartDataSource.cleanCart(Common.currentUser.getFbid(),
-                                                                                                        Common.currentRestaurant.getId())
-                                                                                                        .subscribeOn(Schedulers.io())
-                                                                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                                                                        .subscribe(new SingleObserver<Integer>() {
-                                                                                                            @Override
-                                                                                                            public void onSubscribe(@NonNull Disposable d) {
+                                                                                                if (isUseDiscount && !TextUtils.isEmpty(discountUser)){
 
-                                                                                                            }
+                                                                                                    compositeDisposable.add(iLinkRestaurantAPI.insertDiscount(headers,
+                                                                                                            discountUser)
+                                                                                                            .subscribeOn(Schedulers.io())
+                                                                                                            .observeOn(AndroidSchedulers.mainThread())
+                                                                                                            .subscribe(new Consumer<DiscountModel>() {
+                                                                                                                @Override
+                                                                                                                public void accept(DiscountModel discountModel) throws Exception {
+                                                                                                                    if (discountModel.isSuccess()){
+                                                                                                                        cartDataSource.cleanCart(Common.currentUser.getFbid(),
+                                                                                                                                Common.currentRestaurant.getId())
+                                                                                                                                .subscribeOn(Schedulers.io())
+                                                                                                                                .observeOn(AndroidSchedulers.mainThread())
+                                                                                                                                .subscribe(new SingleObserver<Integer>() {
+                                                                                                                                    @Override
+                                                                                                                                    public void onSubscribe(@NonNull Disposable d) {
 
-                                                                                                            @Override
-                                                                                                            public void onSuccess(@NonNull Integer integer) {
-                                                                                                                Map<String, String> dataSend = new HashMap<>();
-                                                                                                                dataSend.put(Common.NOTIFI_TITLE, "New Order");
-                                                                                                                dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
+                                                                                                                                    }
 
-                                                                                                                FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
-                                                                                                                        Common.currentRestaurant.getId()
-                                                                                                                )), dataSend);
+                                                                                                                                    @Override
+                                                                                                                                    public void onSuccess(@NonNull Integer integer) {
+                                                                                                                                        Map<String, String> dataSend = new HashMap<>();
+                                                                                                                                        dataSend.put(Common.NOTIFI_TITLE, "New Order");
+                                                                                                                                        dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
 
-                                                                                                                compositeDisposable.add(ifmcService.sendNotification(sendData)
-                                                                                                                        .subscribeOn(Schedulers.io())
-                                                                                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                                                                                        .subscribe(new Consumer<FCMResponse>() {
-                                                                                                                            @Override
-                                                                                                                            public void accept(FCMResponse fcmResponse) throws Exception {
-                                                                                                                                Toast.makeText(PlaceOrderActivity.this, "Order Placed", Toast.LENGTH_SHORT).show();
-                                                                                                                                Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
-                                                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                                                                                startActivity(intent);
-                                                                                                                                finish();
-                                                                                                                            }
-                                                                                                                        }, new Consumer<Throwable>() {
-                                                                                                                            @Override
-                                                                                                                            public void accept(Throwable throwable) throws Exception {
-                                                                                                                                Toast.makeText(PlaceOrderActivity.this, "Order Placed but can't send notification to server"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                                                                                Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
-                                                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                                                                                startActivity(intent);
-                                                                                                                                finish();
-                                                                                                                            }
-                                                                                                                        }));
-                                                                                                            }
+                                                                                                                                        FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
+                                                                                                                                                Common.currentRestaurant.getId()
+                                                                                                                                        )), dataSend);
 
-                                                                                                            @Override
-                                                                                                            public void onError(@NonNull Throwable e) {
-                                                                                                                Toast.makeText(PlaceOrderActivity.this, "[CLEAR CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                                                            }
-                                                                                                        });
+                                                                                                                                        compositeDisposable.add(ifmcService.sendNotification(sendData)
+                                                                                                                                                .subscribeOn(Schedulers.io())
+                                                                                                                                                .observeOn(AndroidSchedulers.mainThread())
+                                                                                                                                                .subscribe(new Consumer<FCMResponse>() {
+                                                                                                                                                    @Override
+                                                                                                                                                    public void accept(FCMResponse fcmResponse) throws Exception {
+                                                                                                                                                        if (fcmResponse.getMessage_id() > 0){
+                                                                                                                                                            Toast.makeText(PlaceOrderActivity.this, "Order Placed", Toast.LENGTH_SHORT).show();
+                                                                                                                                                            Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                                                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                                                                            startActivity(intent);
+                                                                                                                                                            finish();
+                                                                                                                                                        }else{
+
+                                                                                                                                                        }
+                                                                                                                                                    }
+                                                                                                                                                }, new Consumer<Throwable>() {
+                                                                                                                                                    @Override
+                                                                                                                                                    public void accept(Throwable throwable) throws Exception {
+                                                                                                                                                        Toast.makeText(PlaceOrderActivity.this, "Order Placed but can't send notification to server"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                                                                        Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                                                                        startActivity(intent);
+                                                                                                                                                        finish();
+                                                                                                                                                    }
+                                                                                                                                                }));
+                                                                                                                                    }
+
+                                                                                                                                    @Override
+                                                                                                                                    public void onError(@NonNull Throwable e) {
+                                                                                                                                        Toast.makeText(PlaceOrderActivity.this, "[CLEAR CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                                                    }
+                                                                                                                                });
+
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }, new Consumer<Throwable>() {
+                                                                                                                @Override
+                                                                                                                public void accept(Throwable throwable) throws Exception {
+                                                                                                                    Toast.makeText(PlaceOrderActivity.this, ""+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                                }
+                                                                                                            }));
+                                                                                                }else{
+                                                                                                    //update cart and clear and show success message
+                                                                                                    cartDataSource.cleanCart(Common.currentUser.getFbid(),
+                                                                                                            Common.currentRestaurant.getId())
+                                                                                                            .subscribeOn(Schedulers.io())
+                                                                                                            .observeOn(AndroidSchedulers.mainThread())
+                                                                                                            .subscribe(new SingleObserver<Integer>() {
+                                                                                                                @Override
+                                                                                                                public void onSubscribe(@NonNull Disposable d) {
+
+                                                                                                                }
+
+                                                                                                                @Override
+                                                                                                                public void onSuccess(@NonNull Integer integer) {
+                                                                                                                    Map<String, String> dataSend = new HashMap<>();
+                                                                                                                    dataSend.put(Common.NOTIFI_TITLE, "New Order");
+                                                                                                                    dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
+
+                                                                                                                    FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
+                                                                                                                            Common.currentRestaurant.getId()
+                                                                                                                    )), dataSend);
+
+                                                                                                                    compositeDisposable.add(ifmcService.sendNotification(sendData)
+                                                                                                                            .subscribeOn(Schedulers.io())
+                                                                                                                            .observeOn(AndroidSchedulers.mainThread())
+                                                                                                                            .subscribe(new Consumer<FCMResponse>() {
+                                                                                                                                @Override
+                                                                                                                                public void accept(FCMResponse fcmResponse) throws Exception {
+                                                                                                                                    if (fcmResponse.getMessage_id() > 0){
+                                                                                                                                        Toast.makeText(PlaceOrderActivity.this, "Order Placed", Toast.LENGTH_SHORT).show();
+                                                                                                                                        Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                                                        startActivity(intent);
+                                                                                                                                        finish();
+                                                                                                                                    }else{
+
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }, new Consumer<Throwable>() {
+                                                                                                                                @Override
+                                                                                                                                public void accept(Throwable throwable) throws Exception {
+                                                                                                                                    Toast.makeText(PlaceOrderActivity.this, "Order Placed but can't send notification to server"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                                                    Intent intent = new Intent(PlaceOrderActivity.this, HomeActivity.class);
+                                                                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                                                    startActivity(intent);
+                                                                                                                                    finish();
+                                                                                                                                }
+                                                                                                                            }));
+                                                                                                                }
+
+                                                                                                                @Override
+                                                                                                                public void onError(@NonNull Throwable e) {
+                                                                                                                    Toast.makeText(PlaceOrderActivity.this, "[CLEAR CART]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                                                }
+                                                                                                            });
+                                                                                                }
                                                                                             }
+
                                                                                             if (dialog.isShowing()){
                                                                                                 dialog.dismiss();
                                                                                             }
@@ -573,6 +811,12 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                         }
                     }));
                 }
+            }
+        }
+        else if(requestCode == SCAN_QR_PERMISSION){
+            if (resultCode == RESULT_OK){
+                edt_discount_code.setText(data.getStringExtra(Common.QR_CODE_TAG));
+                btn_apply.setEnabled(true);
             }
         }
     }
