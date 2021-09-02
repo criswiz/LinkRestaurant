@@ -191,22 +191,27 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                         @Override
                                                         public void accept(DiscountModel discountModel) throws Exception {
                                                             if (discountModel.isSuccess()){
-                                                                Discount discount = discountModel.getResult().get(0);
-                                                                Double total_cash = Double.valueOf(txt_total_cash.getText().toString());
-                                                                Double discount_value = (total_cash * discount.getValue())/100;
-                                                                Double final_cash = total_cash - discount_value;
+                                                                if (!isUseDiscount) {
+                                                                    Discount discount = discountModel.getResult().get(0);
+                                                                    Double total_cash = Double.valueOf(txt_total_cash.getText().toString());
+                                                                    Double discount_value = (total_cash * discount.getValue()) / 100;
+                                                                    Double final_cash = total_cash - discount_value;
 
-                                                                txt_discount_cash.setText(new StringBuilder("(-")
-                                                                .append(discount.getValue())
-                                                                        .append("%) "));
+                                                                    txt_discount_cash.setText(new StringBuilder("(-")
+                                                                            .append(discount.getValue())
+                                                                            .append("%) "));
 
-                                                                txt_discount_cash.setVisibility(View.VISIBLE);
+                                                                    txt_discount_cash.setVisibility(View.VISIBLE);
 
-                                                                txt_total_cash.setText(new StringBuilder("")
-                                                                        .append(final_cash));
+                                                                    txt_total_cash.setText(new StringBuilder("")
+                                                                            .append(final_cash));
 
-                                                                isUseDiscount = true;
-                                                                discountUser = edt_discount_code.getText().toString();
+                                                                    isUseDiscount = true;
+                                                                    discountUser = edt_discount_code.getText().toString();
+                                                                    btn_apply.setEnabled(false);
+                                                                }else{
+                                                                    Toast.makeText(PlaceOrderActivity.this, "Discount Applied Already", Toast.LENGTH_SHORT).show();
+                                                                }
                                                             }
                                                             dialog.dismiss();
                                                         }

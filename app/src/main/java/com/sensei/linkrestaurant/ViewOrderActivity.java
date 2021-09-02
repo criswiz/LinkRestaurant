@@ -120,9 +120,11 @@ public class ViewOrderActivity extends AppCompatActivity {
                             adapter.addItem(orderList);
                         }
                     }
-                    dialog.dismiss();
+
                 }
+                dialog.dismiss();
             }
+
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable throwable) throws Exception {

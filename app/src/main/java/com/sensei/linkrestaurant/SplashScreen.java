@@ -88,73 +88,73 @@ public class SplashScreen extends AppCompatActivity {
 
                                         dialog.show();
 
-
-                                        Map<String, String> headers = new HashMap<>();
-                                        headers.put("Authorization", Common.buildJWT(Common.API_KEY));
-                                        compositeDisposable.add(iLinkRestaurantAPI.updateTokenToServer(headers,
-                                                task.getResult().getToken())
+                                        compositeDisposable.add(iLinkRestaurantAPI.getKey(user.getUid())
                                                 .subscribeOn(Schedulers.io())
                                                 .observeOn(AndroidSchedulers.mainThread())
-                                                .subscribe(new Consumer<TokenModel>() {
+                                                .subscribe(new Consumer<GetKeyModel>() {
                                                     @Override
-                                                    public void accept(TokenModel tokenModel) throws Exception {
-                                                        if (!tokenModel.isSuccess()) {
-                                                            Toast.makeText(SplashScreen.this, "[UPDATE TOKEN ERROR]" + tokenModel.getMessage(), Toast.LENGTH_SHORT).show();
-                                                        }else {
-                                                            compositeDisposable.add(iLinkRestaurantAPI.getKey(user.getUid())
+                                                    public void accept(GetKeyModel getKeyModel) throws Exception {
+                                                        if (getKeyModel.isSuccess()){
+                                                            Common.API_KEY = getKeyModel.getToken();
+
+                                                            Map<String, String> headers = new HashMap<>();
+                                                            headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                                                            compositeDisposable.add(iLinkRestaurantAPI.updateTokenToServer(headers,
+                                                                    task.getResult().getToken())
                                                                     .subscribeOn(Schedulers.io())
                                                                     .observeOn(AndroidSchedulers.mainThread())
-                                                                    .subscribe(new Consumer<GetKeyModel>() {
+                                                                    .subscribe(new Consumer<TokenModel>() {
                                                                         @Override
-                                                                        public void accept(GetKeyModel getKeyModel) throws Exception {
-                                                                            if (getKeyModel.isSuccess()){
-                                                                                Common.API_KEY = getKeyModel.getToken();
+                                                                        public void accept(TokenModel tokenModel) throws Exception {
+                                                                            if (!tokenModel.isSuccess()) 
+                                                                                Toast.makeText(SplashScreen.this, "[UPDATE TOKEN ERROR]" + tokenModel.getMessage(), Toast.LENGTH_SHORT).show();
 
-                                                                                Map<String, String> headers = new HashMap<>();
-                                                                                headers.put("Authorization", Common.buildJWT(Common.API_KEY));
-                                                                                compositeDisposable.add(iLinkRestaurantAPI.getUser(headers)
-                                                                                        .subscribeOn(Schedulers.io())
-                                                                                        .observeOn(AndroidSchedulers.mainThread())
-                                                                                        .subscribe(userModel -> {
-                                                                                                    // If user already exists
-                                                                                                    if (userModel.isSuccess()) {
-                                                                                                        Common.currentUser = userModel.getResult().get(0);
-                                                                                                        Intent intent = new Intent(SplashScreen.this, HomeActivity.class);
+                                                                            compositeDisposable.add(iLinkRestaurantAPI.getUser(headers)
+                                                                                    .subscribeOn(Schedulers.io())
+                                                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                                                    .subscribe(userModel -> {
+                                                                                                // If user already exists
+                                                                                                if (userModel.isSuccess()) {
+                                                                                                    Common.currentUser = userModel.getResult().get(0);
+                                                                                                    Intent intent = new Intent(SplashScreen.this, HomeActivity.class);
+                                                                                                    startActivity(intent);
+                                                                                                } else {
+                                                                                                    if (Common.currentUser == null) {
+                                                                                                        Intent intent = new Intent(SplashScreen.this, UpdateInfoActivity.class);
                                                                                                         startActivity(intent);
-                                                                                                    } else {
-                                                                                                        if (Common.currentUser == null) {
-                                                                                                            Intent intent = new Intent(SplashScreen.this, UpdateInfoActivity.class);
-                                                                                                            startActivity(intent);
-                                                                                                        }
                                                                                                     }
-                                                                                                    finish();
-                                                                                                    dialog.dismiss();
-                                                                                                },
-                                                                                                throwable -> {
-                                                                                                    dialog.dismiss();
-                                                                                                    Toast.makeText(SplashScreen.this, "[GET USER]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                                                }));
-                                                                            }else {
-                                                                                dialog.dismiss();
-                                                                                Toast.makeText(SplashScreen.this, ""+getKeyModel.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                            }
+                                                                                                }
+                                                                                                finish();
+                                                                                                dialog.dismiss();
+                                                                                            },
+                                                                                            throwable -> {
+                                                                                                dialog.dismiss();
+                                                                                                Toast.makeText(SplashScreen.this, "[GET USER]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                            }));
+
                                                                         }
                                                                     }, new Consumer<Throwable>() {
                                                                         @Override
                                                                         public void accept(Throwable throwable) throws Exception {
-                                                                            dialog.dismiss();
-                                                                            Toast.makeText(SplashScreen.this, "Cannot get Json Web Token", Toast.LENGTH_SHORT).show();
+                                                                            Toast.makeText(SplashScreen.this, "[UPDATE TOKEN]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                                                         }
-                                                                    }));
+                                                                    })
+                                                            );
+
+                                                        }else {
+                                                            dialog.dismiss();
+                                                            Toast.makeText(SplashScreen.this, ""+getKeyModel.getMessage(), Toast.LENGTH_SHORT).show();
                                                         }
                                                     }
                                                 }, new Consumer<Throwable>() {
                                                     @Override
                                                     public void accept(Throwable throwable) throws Exception {
-                                                        Toast.makeText(SplashScreen.this, "[GET USER API]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        dialog.dismiss();
+                                                        Toast.makeText(SplashScreen.this, "Cannot get Json Web Token", Toast.LENGTH_SHORT).show();
                                                     }
-                                                })
-                                        );
+                                                }));
+
+
 
 
                                     }else{

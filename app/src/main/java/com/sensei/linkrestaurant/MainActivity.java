@@ -21,6 +21,7 @@ import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.sensei.linkrestaurant.Common.Common;
+import com.sensei.linkrestaurant.Model.GetKeyModel;
 import com.sensei.linkrestaurant.Model.TokenModel;
 import com.sensei.linkrestaurant.Retrofit.ILinkRestaurantAPI;
 import com.sensei.linkrestaurant.Retrofit.RetrofitClient;
@@ -90,69 +91,92 @@ public class MainActivity extends AppCompatActivity {
 
                 dialog.show();
 
-                Paper.book().write(Common.REMEMBER_FBID, user.getUid());
-
-                FirebaseInstallations.getInstance()
-                        .getToken(true)
-                        .addOnFailureListener(new OnFailureListener() {
+                compositeDisposable.add(iLinkRestaurantAPI.getKey(user.getUid())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<GetKeyModel>() {
                             @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(MainActivity.this, "[GET TOKEN]"+e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstallationTokenResult> task) {
-                        if (task.isSuccessful()) {
+                            public void accept(GetKeyModel getKeyModel) throws Exception {
+                                if (getKeyModel.isSuccess()){
+                                    Common.API_KEY = getKeyModel.getToken();
 
-                            dialog.show();
+                                    Paper.book().write(Common.REMEMBER_FBID, user.getUid());
 
-                            Map<String, String> headers = new HashMap<>();
-                            headers.put("Authorization", Common.buildJWT(Common.API_KEY));
-                            compositeDisposable.add(iLinkRestaurantAPI.updateTokenToServer(headers,
-                                    task.getResult().getToken())
-                                    .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe(new Consumer<TokenModel>() {
+                                    FirebaseInstallations.getInstance()
+                                            .getToken(true)
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(MainActivity.this, "[GET TOKEN]"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            }).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
                                         @Override
-                                        public void accept(TokenModel tokenModel) throws Exception {
-                                            if (!tokenModel.isSuccess()) {
-                                                Toast.makeText(MainActivity.this, "[UPDATE TOKEN ERROR]" + tokenModel.getMessage(), Toast.LENGTH_SHORT).show();
+                                        public void onComplete(@NonNull Task<InstallationTokenResult> task) {
+                                            if (task.isSuccessful()) {
 
-                                                compositeDisposable.add(iLinkRestaurantAPI.getUser(headers)
+                                                dialog.show();
+
+                                                Map<String, String> headers = new HashMap<>();
+                                                headers.put("Authorization", Common.buildJWT(Common.API_KEY));
+                                                compositeDisposable.add(iLinkRestaurantAPI.updateTokenToServer(headers,
+                                                        task.getResult().getToken())
                                                         .subscribeOn(Schedulers.io())
                                                         .observeOn(AndroidSchedulers.mainThread())
-                                                        .subscribe(userModel -> {
-                                                                    // If user already exists
-                                                                    if (userModel.isSuccess()) {
-                                                                        Common.currentUser = userModel.getResult().get(0);
-                                                                        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
-                                                                        startActivity(intent);
-                                                                    } else {
-                                                                        Intent intent = new Intent(MainActivity.this, UpdateInfoActivity.class);
-                                                                        startActivity(intent);
-                                                                    }
-                                                                    finish();
-                                                                    dialog.dismiss();
-                                                                },
-                                                                throwable -> {
-                                                                    dialog.dismiss();
-                                                                    Toast.makeText(MainActivity.this, "[GET USER]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                                                }));
+                                                        .subscribe(new Consumer<TokenModel>() {
+                                                            @Override
+                                                            public void accept(TokenModel tokenModel) throws Exception {
+                                                                if (!tokenModel.isSuccess()) {
+                                                                    Toast.makeText(MainActivity.this, "[UPDATE TOKEN ERROR]" + tokenModel.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                                                compositeDisposable.add(iLinkRestaurantAPI.getUser(headers)
+                                                                        .subscribeOn(Schedulers.io())
+                                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                                        .subscribe(userModel -> {
+                                                                                    // If user already exists
+                                                                                    if (userModel.isSuccess()) {
+                                                                                        Common.currentUser = userModel.getResult().get(0);
+                                                                                        Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                                                                                        startActivity(intent);
+                                                                                    } else {
+                                                                                        Intent intent = new Intent(MainActivity.this, UpdateInfoActivity.class);
+                                                                                        startActivity(intent);
+                                                                                    }
+                                                                                    finish();
+                                                                                    dialog.dismiss();
+                                                                                },
+                                                                                throwable -> {
+                                                                                    dialog.dismiss();
+                                                                                    Toast.makeText(MainActivity.this, "[GET USER]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                }));
+                                                                }
+                                                            }
+                                                        }, new Consumer<Throwable>() {
+                                                            @Override
+                                                            public void accept(Throwable throwable) throws Exception {
+                                                                Toast.makeText(MainActivity.this, "[UPDATE TOKEN]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        })
+                                                );
+
                                             }
                                         }
-                                    }, new Consumer<Throwable>() {
-                                        @Override
-                                        public void accept(Throwable throwable) throws Exception {
-                                            Toast.makeText(MainActivity.this, "[UPDATE TOKEN]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                            );
+                                    });
 
-                        }
-                    }
-                });
 
-            }else{
+                                }else {
+                                    dialog.dismiss();
+                                    Toast.makeText(MainActivity.this, ""+getKeyModel.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+                                dialog.dismiss();
+                                Toast.makeText(MainActivity.this, "Cannot get Json Web Token", Toast.LENGTH_SHORT).show();
+                            }
+                        }));
+
+                }else{
                 logInUser();
             }
         };
