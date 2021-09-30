@@ -4,8 +4,8 @@ import java.util.List;
 
 public class AddonModel {
     private boolean success;
-    private String message;
-    private List<Addon> result;
+    private String result;
+    private List<Addon> message;
 
     public boolean isSuccess() {
         return success;
@@ -15,19 +15,19 @@ public class AddonModel {
         this.success = success;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<Addon> getResult() {
+    public String getResult() {
         return result;
     }
 
-    public void setResult(List<Addon> result) {
+    public void setResult(String result) {
         this.result = result;
+    }
+
+    public List<Addon> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<Addon> message) {
+        this.message = message;
     }
 }

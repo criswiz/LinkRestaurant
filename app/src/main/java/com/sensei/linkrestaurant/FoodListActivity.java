@@ -72,6 +72,15 @@ public class FoodListActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_food_list);
+
+        init();
+        initView();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
@@ -127,10 +136,10 @@ public class FoodListActivity extends AppCompatActivity {
             @Override
             public void accept(FoodModel foodModel) throws Exception {
                 if (foodModel.isSuccess()){
-                    searchAdapter = new MyFoodAdapter(FoodListActivity.this, foodModel.getFoodList());
+                    searchAdapter = new MyFoodAdapter(FoodListActivity.this, foodModel.getMessage());
                     recyclerFoodList.setAdapter(searchAdapter);
                 }else {
-                    if (foodModel.getMessage().contains("Empty")){
+                    if (foodModel.getMessage().isEmpty()){
                         recyclerFoodList.setAdapter(null);
                         Toast.makeText(FoodListActivity.this, "Not Found", Toast.LENGTH_SHORT).show();
                     }
@@ -146,14 +155,6 @@ public class FoodListActivity extends AppCompatActivity {
         }));
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_food_list);
-
-        init();
-        initView();
-    }
 
     private void initView() {
         ButterKnife.bind(this);
@@ -185,8 +186,8 @@ public class FoodListActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        super.onStop();
         EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
@@ -214,10 +215,8 @@ public class FoodListActivity extends AppCompatActivity {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(foodModel -> {
                         if (foodModel.isSuccess()){
-                            adapter = new MyFoodAdapter(this, foodModel.getFoodList());
+                            adapter = new MyFoodAdapter(this, foodModel.getMessage());
                             recyclerFoodList.setAdapter(adapter);
-                        }else {
-                            Toast.makeText(this, "[GET FOOD RESULT]"+foodModel.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                         dialog.dismiss();
                     },

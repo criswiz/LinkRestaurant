@@ -78,23 +78,23 @@ public class FavoriteActivity extends AppCompatActivity {
         compositeDisposable.add(iLinkRestaurantAPI.getFavoriteByUser(headers)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Consumer<FavoriteModel>() {
-            @Override
-            public void accept(FavoriteModel favoriteModel) throws Exception {
-                if (favoriteModel.isSuccess()){
-                    adapter = new MyFavoriteAdapter(FavoriteActivity.this, favoriteModel.getResult());
-                    recycler_fav.setAdapter(adapter);
-                }else {
-                    if (favoriteModel.getMessage().contains("Empty"))
-                        Toast.makeText(FavoriteActivity.this, "You do not have any favorite item", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(FavoriteActivity.this, "[GET FAV RESULT]"+favoriteModel.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+        .subscribe(favoriteModel -> {
+            if (favoriteModel.isSuccess()){
+                adapter = new MyFavoriteAdapter(FavoriteActivity.this, favoriteModel.getMessage());
+                recycler_fav.setAdapter(adapter);
                 dialog.dismiss();
+            }else {
+                if (favoriteModel.getMessage().contains("Empty"))
+                    Toast.makeText(FavoriteActivity.this, "You do not have any favorite item", Toast.LENGTH_SHORT).show();
+                else
+                    dialog.dismiss();
+                    Toast.makeText(FavoriteActivity.this, "[GET FAV RESULT]"+favoriteModel.getResult(), Toast.LENGTH_SHORT).show();
             }
+            dialog.dismiss();
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable throwable) throws Exception {
+                dialog.dismiss();
                 Toast.makeText(FavoriteActivity.this, "[GET FAV]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }));

@@ -45,7 +45,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyViewHold
         cartDataSource = new LocalCartDataSource(CartDatabase.getInstance(context).cartDAO());
     }
 
-    Unbinder unbinder;
+
 
     @NonNull
     @Override
@@ -67,10 +67,10 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyViewHold
         .append(cartItemList.get(position).getFoodExtraPrice()));
 
         //Event
-        holder.setListener(new IOnImageViewAdapterClickListener() {
+        holder.setiOnImageViewAdapterClickListener(new IOnImageViewAdapterClickListener() {
             @Override
             public void onCalculatePriceListener(View view, int position, boolean isDecrease, boolean isDelete) {
-                if (isDelete){
+                if (!isDelete){
                     if (isDecrease){
                         if (cartItemList.get(position).getFoodQuantity() > 1)
                             cartItemList.get(position).setFoodQuantity(cartItemList.get(position).getFoodQuantity()-1);
@@ -133,6 +133,7 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyViewHold
         return cartItemList.size();
     }
 
+
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.txt_price_new)
@@ -155,12 +156,13 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyViewHold
         @BindView(R.id.img_increase)
         ImageView img_increase;
 
-        IOnImageViewAdapterClickListener listener;
+        IOnImageViewAdapterClickListener iOnImageViewAdapterClickListener;
 
-        public void setListener(IOnImageViewAdapterClickListener listener) {
-            this.listener = listener;
+        public void setiOnImageViewAdapterClickListener(IOnImageViewAdapterClickListener iOnImageViewAdapterClickListener) {
+            this.iOnImageViewAdapterClickListener = iOnImageViewAdapterClickListener;
         }
 
+        Unbinder unbinder;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -174,11 +176,11 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyViewHold
         @Override
         public void onClick(View view) {
             if (view == img_decrease){
-                listener.onCalculatePriceListener(view, getAdapterPosition(), true, false);
+                iOnImageViewAdapterClickListener.onCalculatePriceListener(view, getAdapterPosition(), true, false);
             }else if (view == img_increase){
-                listener.onCalculatePriceListener(view, getAdapterPosition(), false, false);
+                iOnImageViewAdapterClickListener.onCalculatePriceListener(view, getAdapterPosition(), false, false);
             }else if (view == img_delete_food){
-                listener.onCalculatePriceListener(view, getAdapterPosition(), true, true);
+                iOnImageViewAdapterClickListener.onCalculatePriceListener(view, getAdapterPosition(), true, true);
             }
         }
     }

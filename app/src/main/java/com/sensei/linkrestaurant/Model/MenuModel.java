@@ -4,8 +4,8 @@ import java.util.List;
 
 public class MenuModel {
     private boolean success;
-    private String message;
-    private List<Category> result;
+    private String result;
+    private List<Category> message;
 
     public boolean isSuccess() {
         return success;
@@ -15,19 +15,19 @@ public class MenuModel {
         this.success = success;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<Category> getResult() {
+    public String getResult() {
         return result;
     }
 
-    public void setResult(List<Category> result) {
+    public void setResult(String result) {
         this.result = result;
+    }
+
+    public List<Category> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<Category> message) {
+        this.message = message;
     }
 }

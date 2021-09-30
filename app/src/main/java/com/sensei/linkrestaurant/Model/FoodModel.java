@@ -4,8 +4,8 @@ import java.util.List;
 
 public class FoodModel {
     private boolean success;
-    private String message;
-    private List<Food> foodList;
+    private String result;
+    private List<Food> message;
 
     public boolean isSuccess() {
         return success;
@@ -15,19 +15,19 @@ public class FoodModel {
         this.success = success;
     }
 
-    public String getMessage() {
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
+    }
+
+    public List<Food> getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(List<Food> message) {
         this.message = message;
-    }
-
-    public List<Food> getFoodList() {
-        return foodList;
-    }
-
-    public void setFoodList(List<Food> foodList) {
-        this.foodList = foodList;
     }
 }

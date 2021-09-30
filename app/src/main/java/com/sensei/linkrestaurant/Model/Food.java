@@ -1,11 +1,14 @@
 package com.sensei.linkrestaurant.Model;
 
 public class Food {
-    private int id;
-    private String name, description, image;
-    private Double price;
-    private boolean isSize, isAddon;
-    private Double discount;
+    public int id;
+    public String name;
+    public String description;
+    public String image;
+    public double price;
+    public boolean isSize;
+    public boolean isAddon;
+    public double discount;
 
     public int getId() {
         return id;

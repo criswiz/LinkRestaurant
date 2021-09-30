@@ -30,7 +30,7 @@ public class Common {
     public static final String API_RESTAURANT_ENDPOINT = "https://ilinkrestaurant-android-app.azurewebsites.net/";
     public static final String QR_CODE_TAG = "QR_CODE";
     public static String API_KEY = "";
-    public static final int DEFAULT_COLUMN_COUNT = 1;
+    public static final int DEFAULT_COLUMN_COUNT = 0;
     public static final int FULL_WIDTH_COLUMN = 1;
     public static final String REMEMBER_FBID = "REMEMBER FBID";
     public static final String API_KEY_TAG = "API_KEY";

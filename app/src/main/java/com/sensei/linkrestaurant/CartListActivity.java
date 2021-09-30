@@ -75,23 +75,20 @@ public class CartListActivity extends AppCompatActivity {
                 Common.currentRestaurant.getId())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<List<CartItem>>() {
-                    @Override
-                    public void accept(List<CartItem> cartItems) throws Exception {
-                        if (cartItems.isEmpty()){
-                            btn_order.setText(getString(R.string.empty_cart));
-                            btn_order.setEnabled(false);
-                            btn_order.setBackgroundResource(android.R.color.darker_gray);
-                        }else {
-                            btn_order.setText(getString(R.string.place_order));
-                            btn_order.setEnabled(true);
-                            btn_order.setBackgroundResource(R.color.color_primary);
+                .subscribe(cartItems -> {
+                    if (cartItems.isEmpty()){
+                        btn_order.setText(getString(R.string.empty_cart));
+                        btn_order.setEnabled(false);
+                        btn_order.setBackgroundResource(android.R.color.darker_gray);
+                    }else {
+                        btn_order.setText(getString(R.string.place_order));
+                        btn_order.setEnabled(true);
+                        btn_order.setBackgroundResource(R.color.color_primary);
 
-                            MyCartAdapter adapter = new MyCartAdapter(CartListActivity.this, cartItems);
-                            recycler_cart.setAdapter(adapter);
+                        MyCartAdapter adapter = new MyCartAdapter(CartListActivity.this, cartItems);
+                        recycler_cart.setAdapter(adapter);
 
-                            calculateCartTotalPrice();
-                        }
+                        calculateCartTotalPrice();
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -147,6 +144,10 @@ public class CartListActivity extends AppCompatActivity {
 
     private void init(){
         cartDataSource = new LocalCartDataSource(CartDatabase.getInstance(this).cartDAO());
+    }
+
+    private void initView() {
+        ButterKnife.bind(this);
 
         toolbar.setTitle(getString(R.string.cart));
         setSupportActionBar(toolbar);
@@ -165,10 +166,6 @@ public class CartListActivity extends AppCompatActivity {
                 startActivity(new Intent(CartListActivity.this, PlaceOrderActivity.class));
             }
         });
-    }
-
-    private void initView() {
-        ButterKnife.bind(this);
     }
 
     //EvenBus

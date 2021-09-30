@@ -4,8 +4,8 @@ import java.util.List;
 
 public class CreateOrderModel {
     private boolean success;
-    private List<CreateOrder> result;
-    private String message;
+    private List<CreateOrder> message;
+    private String result;
 
     public boolean isSuccess() {
         return success;
@@ -15,19 +15,19 @@ public class CreateOrderModel {
         this.success = success;
     }
 
-    public List<CreateOrder> getResult() {
-        return result;
-    }
-
-    public void setResult(List<CreateOrder> result) {
-        this.result = result;
-    }
-
-    public String getMessage() {
+    public List<CreateOrder> getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(List<CreateOrder> message) {
         this.message = message;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

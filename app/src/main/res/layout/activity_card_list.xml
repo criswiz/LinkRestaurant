@@ -78,10 +78,11 @@
         <Button
             android:id="@+id/btn_order"
             android:text="@string/order"
-            app:layout_alignSelf="flex_start"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/border_button"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/magnifika"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

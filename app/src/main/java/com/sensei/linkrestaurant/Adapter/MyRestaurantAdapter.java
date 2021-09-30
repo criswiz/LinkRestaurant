@@ -22,6 +22,7 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -53,15 +54,12 @@ public class MyRestaurantAdapter extends RecyclerView.Adapter<MyRestaurantAdapte
         holder.txt_restaurant_address.setText(new StringBuilder(restaurantList.get(position).getAddress()));
         holder.txt_restaurant_name.setText(new StringBuilder(restaurantList.get(position).getName()));
 
-        holder.setListener(new IOnRecyclerViewClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                Common.currentRestaurant = restaurantList.get(position);
+        holder.setListener((view, position1) -> {
+            Common.currentRestaurant = restaurantList.get(position1);
 
-                //Post sticky to listen from another activity
-                EventBus.getDefault().postSticky(new MenuItemEvent(true, restaurantList.get(position)));
-                context.startActivity(new Intent(context, MenuActivity.class));
-            }
+            //Post sticky to listen from another activity
+            EventBus.getDefault().postSticky(new MenuItemEvent(true, restaurantList.get(position1)));
+            context.startActivity(new Intent(context, MenuActivity.class));
         });
     }
 
@@ -70,7 +68,7 @@ public class MyRestaurantAdapter extends RecyclerView.Adapter<MyRestaurantAdapte
         return restaurantList.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.txt_restaurant_name)
         TextView txt_restaurant_name;
         @BindView(R.id.txt_restaurant_address)

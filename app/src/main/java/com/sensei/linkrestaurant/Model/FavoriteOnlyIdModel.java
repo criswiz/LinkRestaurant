@@ -4,8 +4,8 @@ import java.util.List;
 
 public class FavoriteOnlyIdModel {
     private boolean success;
-    private String message;
-    private List<FavoriteOnlyId> result;
+    private String result;
+    private List<FavoriteOnlyId> message;
 
     public boolean isSuccess() {
         return success;
@@ -15,19 +15,19 @@ public class FavoriteOnlyIdModel {
         this.success = success;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<FavoriteOnlyId> getResult() {
+    public String getResult() {
         return result;
     }
 
-    public void setResult(List<FavoriteOnlyId> result) {
+    public void setResult(String result) {
         this.result = result;
+    }
+
+    public List<FavoriteOnlyId> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<FavoriteOnlyId> message) {
+        this.message = message;
     }
 }

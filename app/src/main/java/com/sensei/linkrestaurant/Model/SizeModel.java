@@ -4,8 +4,8 @@ import java.util.List;
 
 public class SizeModel {
     private boolean success;
-    private List<Size> result;
-    private String message;
+    private List<Size> message;
+    private String result;
 
     public boolean isSuccess() {
         return success;
@@ -15,19 +15,19 @@ public class SizeModel {
         this.success = success;
     }
 
-    public List<Size> getResult() {
-        return result;
-    }
-
-    public void setResult(List<Size> result) {
-        this.result = result;
-    }
-
-    public String getMessage() {
+    public List<Size> getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(List<Size> message) {
         this.message = message;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

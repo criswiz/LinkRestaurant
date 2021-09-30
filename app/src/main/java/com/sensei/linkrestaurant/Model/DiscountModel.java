@@ -4,8 +4,8 @@ import java.util.List;
 
 public class DiscountModel {
     private boolean success;
-    private String message;
-    List<Discount> result;
+    private String result;
+    List<Discount> message;
 
     public boolean isSuccess() {
         return success;
@@ -15,19 +15,19 @@ public class DiscountModel {
         this.success = success;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<Discount> getResult() {
+    public String getResult() {
         return result;
     }
 
-    public void setResult(List<Discount> result) {
+    public void setResult(String result) {
         this.result = result;
+    }
+
+    public List<Discount> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<Discount> message) {
+        this.message = message;
     }
 }

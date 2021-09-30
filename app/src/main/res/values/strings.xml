@@ -71,5 +71,7 @@
     <string name="enter_or_scan_your_code">Enter or Scan your code</string>
     <string name="scan">Scan</string>
     <string name="apply">Apply</string>
+    <string name="title_activity_link_restaurant_main">LinkRestaurantMain</string>
+    <string name="title_activity_link_main2">LinkMainActivity2</string>
 
 </resources>

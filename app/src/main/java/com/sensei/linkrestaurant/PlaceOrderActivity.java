@@ -192,7 +192,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                         public void accept(DiscountModel discountModel) throws Exception {
                                                             if (discountModel.isSuccess()){
                                                                 if (!isUseDiscount) {
-                                                                    Discount discount = discountModel.getResult().get(0);
+                                                                    Discount discount = discountModel.getMessage().get(0);
                                                                     Double total_cash = Double.valueOf(txt_total_cash.getText().toString());
                                                                     Double discount_value = (total_cash * discount.getValue()) / 100;
                                                                     Double final_cash = total_cash - discount_value;
@@ -361,7 +361,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                     public void accept(CreateOrderModel createOrderModel) throws Exception {
                                         if (createOrderModel.isSuccess()){
                                         compositeDisposable.add(iLinkRestaurantAPI.updateOrder(headers,
-                                                String.valueOf(createOrderModel.getResult().get(0).getOrderNumber()),
+                                                String.valueOf(createOrderModel.getMessage().get(0).getOrderNumber()),
                                                 new Gson().toJson(cartItems))
                                                 .subscribeOn(Schedulers.io())
                                                 .observeOn(AndroidSchedulers.mainThread())
@@ -395,7 +395,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                                                 public void onSuccess(@NonNull Integer integer) {
                                                                                                     Map<String, String> dataSend = new HashMap<>();
                                                                                                     dataSend.put(Common.NOTIFI_TITLE, "New Order");
-                                                                                                    dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
+                                                                                                    dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getMessage().get(0));
 
                                                                                                     FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
                                                                                                             Common.currentRestaurant.getId()
@@ -459,7 +459,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                             public void onSuccess(@NonNull Integer integer) {
                                                                                 Map<String, String> dataSend = new HashMap<>();
                                                                                 dataSend.put(Common.NOTIFI_TITLE, "New Order");
-                                                                                dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
+                                                                                dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getMessage().get(0));
 
                                                                                 FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
                                                                                         Common.currentRestaurant.getId()
@@ -514,7 +514,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                         );
                                     }else {
                                             dialog.dismiss();
-                                            Toast.makeText(PlaceOrderActivity.this, "[CREATE ORDER]"+createOrderModel.getMessage(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(PlaceOrderActivity.this, "[CREATE ORDER]"+createOrderModel.getResult(), Toast.LENGTH_SHORT).show();
                                         }
                                   }
                                 }, new Consumer<Throwable>() {
@@ -630,7 +630,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                             Map<String, String> headers = new HashMap<>();
                                                                             headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                                                                             compositeDisposable.add(iLinkRestaurantAPI.updateOrder(headers,
-                                                                                    String.valueOf(createOrderModel.getResult().get(0).getOrderNumber()),
+                                                                                    String.valueOf(createOrderModel.getMessage().get(0).getOrderNumber()),
                                                                                     new Gson().toJson(cartItems))
                                                                                     .subscribeOn(Schedulers.io())
                                                                                     .observeOn(AndroidSchedulers.mainThread())
@@ -664,7 +664,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                                                                                     public void onSuccess(@NonNull Integer integer) {
                                                                                                                                         Map<String, String> dataSend = new HashMap<>();
                                                                                                                                         dataSend.put(Common.NOTIFI_TITLE, "New Order");
-                                                                                                                                        dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
+                                                                                                                                        dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getMessage().get(0));
 
                                                                                                                                         FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
                                                                                                                                                 Common.currentRestaurant.getId()
@@ -728,7 +728,7 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                                                                 public void onSuccess(@NonNull Integer integer) {
                                                                                                                     Map<String, String> dataSend = new HashMap<>();
                                                                                                                     dataSend.put(Common.NOTIFI_TITLE, "New Order");
-                                                                                                                    dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getResult().get(0));
+                                                                                                                    dataSend.put(Common.NOTIFI_CONTENT, "You have new order"+createOrderModel.getMessage().get(0));
 
                                                                                                                     FCMSendData sendData = new FCMSendData(Common.createTopicSender(Common.getTopicChannel(
                                                                                                                             Common.currentRestaurant.getId()
@@ -778,13 +778,13 @@ public class PlaceOrderActivity extends AppCompatActivity implements DatePickerD
                                                                                         @Override
                                                                                         public void accept(Throwable throwable) throws Exception {
                                                                                             dialog.dismiss();
-                                                                                            //Toast.makeText(PlaceOrderActivity.this, "[UPDATE ORDER]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                                            Toast.makeText(PlaceOrderActivity.this, "[UPDATE ORDER]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                                                                         }
                                                                                     })
                                                                             );
                                                                         }else {
                                                                             dialog.dismiss();
-                                                                            Toast.makeText(PlaceOrderActivity.this, "[CREATE ORDER]"+createOrderModel.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                            Toast.makeText(PlaceOrderActivity.this, "[CREATE ORDER]"+createOrderModel.getResult(), Toast.LENGTH_SHORT).show();
                                                                         }
                                                                     }
                                                                 }, new Consumer<Throwable>() {

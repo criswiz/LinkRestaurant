@@ -19,7 +19,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.sensei.linkrestaurant.Common.Common;
 import com.sensei.linkrestaurant.Model.GetKeyModel;
 import com.sensei.linkrestaurant.Model.TokenModel;
@@ -27,7 +26,6 @@ import com.sensei.linkrestaurant.Retrofit.ILinkRestaurantAPI;
 import com.sensei.linkrestaurant.Retrofit.RetrofitClient;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +37,10 @@ import dmax.dialog.SpotsDialog;
 import io.paperdb.Paper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+@SuppressWarnings("ALL")
 public class MainActivity extends AppCompatActivity {
     ILinkRestaurantAPI iLinkRestaurantAPI;
     CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -53,14 +51,13 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener listener;
 
     private static final int APP_REQUEST_CODE = 1234;
-    private static final String EMAIL = "email";
 
     @BindView(R.id.btn_sign_in)
     Button btn_sign_in;
 
     @OnClick(R.id.btn_sign_in)
     void logInUser(){
-        startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
+       startActivityForResult(AuthUI.getInstance().createSignInIntentBuilder()
                 .setAvailableProviders(providers).build(), APP_REQUEST_CODE);
     }
 
@@ -127,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                                                             public void accept(TokenModel tokenModel) throws Exception {
                                                                 if (!tokenModel.isSuccess()) {
                                                                     Toast.makeText(MainActivity.this, "[UPDATE TOKEN ERROR]" + tokenModel.getMessage(), Toast.LENGTH_SHORT).show();
-
+                                                                }
                                                                 compositeDisposable.add(iLinkRestaurantAPI.getUser(headers)
                                                                         .subscribeOn(Schedulers.io())
                                                                         .observeOn(AndroidSchedulers.mainThread())
@@ -140,8 +137,9 @@ public class MainActivity extends AppCompatActivity {
                                                                                     } else {
                                                                                         Intent intent = new Intent(MainActivity.this, UpdateInfoActivity.class);
                                                                                         startActivity(intent);
+                                                                                        finish();
                                                                                     }
-                                                                                    finish();
+
                                                                                     dialog.dismiss();
                                                                                 },
                                                                                 throwable -> {
@@ -149,10 +147,11 @@ public class MainActivity extends AppCompatActivity {
                                                                                     Toast.makeText(MainActivity.this, "[GET USER]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                                                                 }));
                                                                 }
-                                                            }
+
                                                         }, new Consumer<Throwable>() {
                                                             @Override
                                                             public void accept(Throwable throwable) throws Exception {
+                                                                dialog.dismiss();
                                                                 Toast.makeText(MainActivity.this, "[UPDATE TOKEN]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
                                                             }
                                                         })
@@ -177,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                         }));
 
                 }else{
+                dialog.dismiss();
                 logInUser();
             }
         };

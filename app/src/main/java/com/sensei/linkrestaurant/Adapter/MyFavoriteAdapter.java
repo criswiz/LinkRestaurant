@@ -102,8 +102,8 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
                                     @Override
                                     public void accept(RestaurantModel restaurantModel){
                                         if (restaurantModel.isSuccess()){
-                                            Common.currentRestaurant = restaurantModel.getResult().get(0);
-                                            EventBus.getDefault().postSticky(new FoodDetailEvent(true, foodModel.getFoodList().get(0)));
+                                            Common.currentRestaurant = restaurantModel.getMessage().get(0);
+                                            EventBus.getDefault().postSticky(new FoodDetailEvent(true, foodModel.getMessage().get(0)));
                                         }else {
                                             Toast.makeText(context, ""+restaurantModel.getMessage(), Toast.LENGTH_SHORT).show();
                                         }
@@ -116,7 +116,7 @@ public class MyFavoriteAdapter extends RecyclerView.Adapter<MyFavoriteAdapter.My
                                 }));
                             }else {
 
-                                EventBus.getDefault().postSticky(new FoodDetailEvent(true, foodModel.getFoodList().get(0)));
+                                EventBus.getDefault().postSticky(new FoodDetailEvent(true, foodModel.getMessage().get(0)));
                             }
                         }else {
                             Toast.makeText(context, "[GET FOOD BY ID RESULT]"+foodModel.getMessage(), Toast.LENGTH_SHORT).show();

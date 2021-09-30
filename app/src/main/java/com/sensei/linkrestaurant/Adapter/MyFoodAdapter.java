@@ -1,5 +1,6 @@
 package com.sensei.linkrestaurant.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -72,8 +73,8 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull @NotNull MyViewHolder holder, int position) {
-        position = holder.getAdapterPosition();
+    public void onBindViewHolder(@NonNull @NotNull MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
+
         Picasso.get().load(foodList.get(position).getImage()).placeholder(R.drawable.app_icon).into(holder.img_food);
         holder.txt_food_name.setText(foodList.get(position).getName());
         holder.txt_food_price.setText(new StringBuilder(context.getString(R.string.money_sign)).append(foodList.get(position).getPrice()));
@@ -94,7 +95,6 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
         }
 
         //Favorite Event
-        int finalPosition = position;
         holder.img_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,7 +104,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                     Map<String, String> headers = new HashMap<>();
                     headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                     compositeDisposable.add(iLinkRestaurantAPI.removeFavorite(headers,
-                            foodList.get(finalPosition).getId(),
+                            foodList.get(position).getId(),
                             Common.currentRestaurant.getId())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -115,7 +115,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                                 fav.setImageResource(R.drawable.ic_baseline_favorite_border_primary_color_24);
                                 fav.setTag(false);
                                 if (Common.currentFavOfRestaurant != null){
-                                    Common.removeFavorite(foodList.get(finalPosition).getId());
+                                    Common.removeFavorite(foodList.get(position).getId());
                                 }
                             }
                         }
@@ -130,12 +130,12 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                     Map<String, String> headers = new HashMap<>();
                     headers.put("Authorization", Common.buildJWT(Common.API_KEY));
                     compositeDisposable.add(iLinkRestaurantAPI.insertFavorite(headers,
-                            foodList.get(finalPosition).getId(),
+                            foodList.get(position).getId(),
                             Common.currentRestaurant.getId(),
                             Common.currentRestaurant.getName(),
-                            foodList.get(finalPosition).getName(),
-                            foodList.get(finalPosition).getImage(),
-                            foodList.get(finalPosition).getPrice())
+                            foodList.get(position).getName(),
+                            foodList.get(position).getImage(),
+                            foodList.get(position).getPrice())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Consumer<FavoriteModel>() {
@@ -145,7 +145,7 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
                                         fav.setImageResource(R.drawable.ic_baseline_favorite_primary_color_24);
                                         fav.setTag(true);
                                         if (Common.currentFavOfRestaurant != null){
-                                            Common.currentFavOfRestaurant.add(new FavoriteOnlyId(foodList.get(finalPosition).getId()));
+                                            Common.currentFavOfRestaurant.add(new FavoriteOnlyId(foodList.get(position).getId()));
                                         }
                                     }
                                 }
@@ -197,21 +197,21 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
 
     @Override
     public int getItemCount() {
-        return 0;
+        return foodList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        @BindView(R.id.img_food)
+        @BindView(R.id.img_food_specials)
         ImageView img_food;
-        @BindView(R.id.img_fav)
+        @BindView(R.id.img_fav_specials)
         ImageView img_fav;
-        @BindView(R.id.txt_food_name)
+        @BindView(R.id.txt_food_name_specials)
         TextView txt_food_name;
-        @BindView(R.id.txt_food_price)
+        @BindView(R.id.txt_food_price_specials)
         TextView txt_food_price;
-        @BindView(R.id.img_detail)
+        @BindView(R.id.img_detail_specials)
         ImageView img_detail;
-        @BindView(R.id.img_cart)
+        @BindView(R.id.img_cart_specials)
         ImageView img_cart;
 
         IFoodDetailOrCartClickListener listener;
@@ -231,9 +231,9 @@ public class MyFoodAdapter extends RecyclerView.Adapter<MyFoodAdapter.MyViewHold
 
         @Override
         public void onClick(View v) {
-            if (v.getId() == R.id.img_detail){
+            if (v.getId() == R.id.img_detail_specials){
                 listener.onFoodItemClickListener(v, getAdapterPosition(), true);
-            }else if (v.getId() == R.id.img_cart){
+            }else if (v.getId() == R.id.img_cart_specials){
                 listener.onFoodItemClickListener(v, getAdapterPosition(), false);
             }
         }

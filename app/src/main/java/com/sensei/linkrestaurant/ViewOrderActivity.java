@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.sensei.linkrestaurant.Adapter.MyOrderAdapter;
 import com.sensei.linkrestaurant.Common.Common;
+import com.sensei.linkrestaurant.Interface.ILoadMore;
 import com.sensei.linkrestaurant.Model.MaxOrderModel;
 import com.sensei.linkrestaurant.Model.Order;
 import com.sensei.linkrestaurant.Model.OrderModel;
@@ -63,7 +64,6 @@ public class ViewOrderActivity extends AppCompatActivity {
         init();
         initView();
 
-        //getAllOrder();
         getMaxOrder();
     }
 
@@ -80,7 +80,7 @@ public class ViewOrderActivity extends AppCompatActivity {
                     @Override
                     public void accept(MaxOrderModel maxordermodel) throws Exception {
                         if (maxordermodel.isSuccess()){
-                            maxData = maxordermodel.getResult().get(0).getMaxRow();
+                            maxData = maxordermodel.getMessage().get(0).getMaxRow();
                             dialog.dismiss();
 
                             getAllOrder(0,10);
@@ -107,16 +107,16 @@ public class ViewOrderActivity extends AppCompatActivity {
             @Override
             public void accept(OrderModel orderModel) {
                 if (orderModel.isSuccess()){
-                    if(orderModel.getResult().size() > 0){
+                    if(orderModel.getMessage().size() > 0){
                         if (adapter == null){
                             orderList = new ArrayList<>();
-                            orderList = (orderModel.getResult());
+                            orderList = (orderModel.getMessage());
                             adapter = new MyOrderAdapter(ViewOrderActivity.this, orderList, recycler_view_order);
-                            adapter.setiLoadMore(this);
+                            //adapter.setIsLoaded(HomeActivity.this);
                             recycler_view_order.setAdapter(adapter);
                         }else{
                             orderList.remove(orderList.size()-1);
-                            orderList = orderModel.getResult();
+                            orderList = orderModel.getMessage();
                             adapter.addItem(orderList);
                         }
                     }

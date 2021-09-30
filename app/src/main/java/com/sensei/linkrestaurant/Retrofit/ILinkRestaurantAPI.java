@@ -25,7 +25,6 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
-import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -51,7 +50,7 @@ public interface ILinkRestaurantAPI {
 
     @GET("restaurantById")
     Observable<RestaurantModel> getRestaurantById(@HeaderMap Map<String, String> headers,
-                                                      @Query("restaurantId") String id);
+                                                      @Query("id") String id);
 
     @GET("nearbyrestaurant")
     Observable<RestaurantModel> getNearbyRestaurant(@HeaderMap Map<String, String> headers,
@@ -87,8 +86,8 @@ public interface ILinkRestaurantAPI {
     @GET("favorite")
     Observable<FavoriteModel> getFavoriteByUser (@HeaderMap Map<String, String> headers);
 
-    @GET("favoriteByID")
-    Observable<FavoriteOnlyIdModel> getFavoriteByRestaurant (@HeaderMap Map<String, String> headers,
+    @GET("favoriteByRestaurant")
+    Observable<FavoriteOnlyIdModel> getFavoriteByRestaurant(@HeaderMap Map<String, String> headers,
                                                              @Query("restaurantId") int restaurantId);
 
     @GET("order")
@@ -100,7 +99,7 @@ public interface ILinkRestaurantAPI {
     Observable<MaxOrderModel> getMaxOrder (@HeaderMap Map<String, String> headers);
 
     @GET("token")
-    Observable<TokenModel> getToken (@HeaderMap Map<String, String> headers);
+    Observable<TokenModel> getToken(@HeaderMap Map<String, String> headers);
 
     //POST
     @POST("applydiscount")
@@ -111,7 +110,7 @@ public interface ILinkRestaurantAPI {
     @POST("token")
     @FormUrlEncoded
     Observable<TokenModel> updateTokenToServer(@HeaderMap Map<String, String> headers,
-                                       @Field("orderPhone") String token);
+                                       @Field("token") String token);
 
 
     @POST("createOrder")
@@ -144,7 +143,7 @@ public interface ILinkRestaurantAPI {
     @FormUrlEncoded
     Observable<FavoriteModel> insertFavorite   (@HeaderMap Map<String, String> headers,
                                                 @Field("foodId") int foodId,
-                                                @Field("retaurantId") int restaurantId,
+                                                @Field("restaurantId") int restaurantId,
                                                 @Field("restaurantName") String restaurantName,
                                                 @Field("foodName") String foodName,
                                                 @Field("foodImage") String foodImage,

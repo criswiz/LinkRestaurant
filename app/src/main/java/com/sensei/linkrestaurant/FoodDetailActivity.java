@@ -197,7 +197,7 @@ public class FoodDetailActivity extends AppCompatActivity {
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(sizeModel -> {
                                             //Send local event bus
-                                            EventBus.getDefault().post(new SizeLoadEvent(true, sizeModel.getResult()));
+                                            EventBus.getDefault().post(new SizeLoadEvent(true, sizeModel.getMessage()));
                                             //load addon after load size
                                             dialog.show();
                                             compositeDisposable.add(
@@ -206,7 +206,7 @@ public class FoodDetailActivity extends AppCompatActivity {
                                                             .observeOn(AndroidSchedulers.mainThread())
                                                             .subscribe(addonModel -> {
                                                                         dialog.dismiss();
-                                                                        EventBus.getDefault().post(new AddonLoadEvent(true, addonModel.getResult()));
+                                                                        EventBus.getDefault().post(new AddonLoadEvent(true, addonModel.getMessage()));
                                                                     },
                                                                     throwable -> {
                                                                         dialog.dismiss();
@@ -232,7 +232,7 @@ public class FoodDetailActivity extends AppCompatActivity {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(sizeModel -> {
                                         //Send local event bus
-                                        EventBus.getDefault().post(new SizeLoadEvent(true, sizeModel.getResult()));
+                                        EventBus.getDefault().post(new SizeLoadEvent(true, sizeModel.getMessage()));
                                     },
                             throwable -> {
                                 dialog.dismiss();
@@ -251,7 +251,7 @@ public class FoodDetailActivity extends AppCompatActivity {
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(addonModel -> {
                                                 dialog.dismiss();
-                                                EventBus.getDefault().post(new AddonLoadEvent(true, addonModel.getResult()));
+                                                EventBus.getDefault().post(new AddonLoadEvent(true, addonModel.getMessage()));
                                             },
                                             throwable -> {
                                                 dialog.dismiss();

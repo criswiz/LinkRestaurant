@@ -11,19 +11,36 @@
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/drawable/ic_baseline_remove_24.xml" value="0.22870370370370371" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/drawable/quantity_background_textview.xml" value="0.22870370370370371" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_card_list.xml" value="0.1" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_favorite.xml" value="0.20185185185185187" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_food_list.xml" value="0.16944444444444445" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_fooddetailactivity.xml" value="0.16944444444444445" />
-        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_home.xml" value="0.1638888888888889" />
-        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_main.xml" value="0.17222222222222222" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_home.xml" value="0.22" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_nearby_reataurant.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_place_order.xml" value="0.17222222222222222" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_scanqr.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_update_info.xml" value="0.1537037037037037" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/activity_view_order.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/app_bar_home.xml" value="0.10989583333333333" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/app_bar_main.xml" value="0.14722222222222223" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/bt_border_color.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/content_home.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/content_main.xml" value="0.14722222222222223" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/fragment_gallery.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/fragment_home.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_add_new_address.xml" value="0.18611111111111112" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_addon.xml" value="0.2074074074074074" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_cart.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_favorite_item.xml" value="0.20185185185185187" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_food.xml" value="0.21481481481481482" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_loading_item.xml" value="0.16944444444444445" />
         <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_order.xml" value="0.22" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/layout_restaurant.xml" value="0.18425925925925926" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/nav_header_home.xml" value="0.1" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/layout/nav_header_main.xml" value="0.14722222222222223" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/menu/activity_home_drawer.xml" value="0.221025641025641" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/menu/activity_main_drawer.xml" value="0.221025641025641" />
+        <entry key="..\:/Users/SAMUELKWAMEAGBENORWU/AndroidStudioProjects/LinkRestaurant/app/src/main/res/menu/home.xml" value="0.22447916666666667" />
       </map>
     </option>
   </component>

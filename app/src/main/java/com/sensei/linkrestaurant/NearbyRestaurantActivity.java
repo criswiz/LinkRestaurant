@@ -97,6 +97,14 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        binding = ActivityNearbyReataurantBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         init();
         initView();
     }
@@ -145,15 +153,16 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
             @Override
             public void accept(RestaurantModel restaurantModel) throws Exception {
                 if (restaurantModel.isSuccess()){
-                    addRestaurantMarker(restaurantModel.getResult());
+                    addRestaurantMarker(restaurantModel.getMessage());
                 }else {
-                    Toast.makeText(NearbyRestaurantActivity.this, ""+restaurantModel.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(NearbyRestaurantActivity.this, ""+restaurantModel.getResult(), Toast.LENGTH_SHORT).show();
                 }
                 dialog.dismiss();
             }
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable throwable) throws Exception {
+                dialog.dismiss();
                 Toast.makeText(NearbyRestaurantActivity.this, "[NEARBY RESTAURANT]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }));
@@ -192,14 +201,6 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
 
     private void initView() {
         ButterKnife.bind(this);
-
-        binding = ActivityNearbyReataurantBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
 
         toolbar.setTitle(getString(R.string.nearby_restaurant));
         setSupportActionBar(toolbar);
@@ -247,7 +248,7 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
                         @Override
                         public void accept(RestaurantModel restaurantByIdModel) throws Exception {
                             if (restaurantByIdModel.isSuccess()){
-                                Common.currentRestaurant = restaurantByIdModel.getResult().get(0);
+                                Common.currentRestaurant = restaurantByIdModel.getMessage().get(0);
                                 EventBus.getDefault().postSticky(new MenuItemEvent(true, Common.currentRestaurant));
                                 startActivity(new Intent(NearbyRestaurantActivity.this, MenuActivity.class));
                                 finish();
@@ -258,6 +259,7 @@ public class NearbyRestaurantActivity extends AppCompatActivity implements OnMap
                     }, new Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable throwable) throws Exception {
+                            dialog.dismiss();
                             Toast.makeText(NearbyRestaurantActivity.this, "[GET RESTAURANT BY ID]"+throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }));

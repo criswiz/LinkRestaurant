@@ -98,13 +98,13 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void accept(FavoriteOnlyIdModel favoriteOnlyIdModel) throws Exception {
                 if (favoriteOnlyIdModel.isSuccess()){
-                    if (favoriteOnlyIdModel.getResult() != null && favoriteOnlyIdModel.getResult().size() > 0){
-                        Common.currentFavOfRestaurant = favoriteOnlyIdModel.getResult();
+                    if (favoriteOnlyIdModel.getMessage() != null && favoriteOnlyIdModel.getMessage().size() > 0){
+                        Common.currentFavOfRestaurant = favoriteOnlyIdModel.getMessage();
                     }else {
                         Common.currentFavOfRestaurant = new ArrayList<>();
                     }
                 }else {
-                    //Toast.makeText(MenuActivity.this, "[GET FAVORITE]"+favoriteOnlyIdModel.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MenuActivity.this, "[GET FAVORITE]"+favoriteOnlyIdModel.getResult(), Toast.LENGTH_SHORT).show();
 
                 }
             }
@@ -148,12 +148,7 @@ public class MenuActivity extends AppCompatActivity {
     private void initView() {
         ButterKnife.bind(this);
 
-        btn_cart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MenuActivity.this, CartListActivity.class));
-            }
-        });
+        btn_cart.setOnClickListener(v -> startActivity(new Intent(MenuActivity.this, CartListActivity.class)));
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setOrientation(RecyclerView.VERTICAL);
@@ -166,6 +161,8 @@ public class MenuActivity extends AppCompatActivity {
                     {
                         case Common.DEFAULT_COLUMN_COUNT:
                             return 1;
+                        case Common.FULL_WIDTH_COLUMN:
+                            return 2;
                         default: return -1;
                     }
                 }else
@@ -224,15 +221,13 @@ public class MenuActivity extends AppCompatActivity {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(menuModel -> {
-                                adapter = new MyCategoryAdapter(MenuActivity.this, menuModel.getResult());
+                                adapter = new MyCategoryAdapter(MenuActivity.this, menuModel.getMessage());
                                 recycler_category.setAdapter(adapter);
                             },
                             throwable -> {
                                 Toast.makeText(this, "[GET CATEGORY]" + throwable.getMessage(), Toast.LENGTH_SHORT).show();
                             })
             );
-        }else {
-
         }
     }
 }

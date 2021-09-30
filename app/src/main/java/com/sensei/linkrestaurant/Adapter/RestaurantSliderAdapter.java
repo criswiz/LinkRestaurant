@@ -2,6 +2,7 @@ package com.sensei.linkrestaurant.Adapter;
 
 import com.sensei.linkrestaurant.Model.Restaurant;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ss.com.bannerslider.adapters.SliderAdapter;

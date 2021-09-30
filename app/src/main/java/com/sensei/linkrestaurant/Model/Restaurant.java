@@ -5,9 +5,14 @@ public class Restaurant {
     //That will help Gson to parse it correctly
 
     private int id;
-    private String name,address, phone, image, paymentUrl;
-    private Float lat, lng;
-    private int userOwner;
+    private String name;
+    private String address;
+    private String phone;
+    private Float lat;
+    private Float lng;
+    private int userowner;
+    private String image;
+    private String paymentUrl;
 
     public int getId() {
         return id;
@@ -41,22 +46,6 @@ public class Restaurant {
         this.phone = phone;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getPaymentUrl() {
-        return paymentUrl;
-    }
-
-    public void setPaymentUrl(String paymentUrl) {
-        this.paymentUrl = paymentUrl;
-    }
-
     public Float getLat() {
         return lat;
     }
@@ -73,11 +62,27 @@ public class Restaurant {
         this.lng = lng;
     }
 
-    public int getUserOwner() {
-        return userOwner;
+    public int getUserowner() {
+        return userowner;
     }
 
-    public void setUserOwner(int userOwner) {
-        this.userOwner = userOwner;
+    public void setUserowner(int userowner) {
+        this.userowner = userowner;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getPaymentUrl() {
+        return paymentUrl;
+    }
+
+    public void setPaymentUrl(String paymentUrl) {
+        this.paymentUrl = paymentUrl;
     }
 }

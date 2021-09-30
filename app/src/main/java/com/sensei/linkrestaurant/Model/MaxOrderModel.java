@@ -4,8 +4,8 @@ import java.util.List;
 
 public class MaxOrderModel {
     private boolean success;
-    private String message;
-    private List<MaxOrder> result;
+    private String result;
+    private List<MaxOrder> message;
 
     public boolean isSuccess() {
         return success;
@@ -15,19 +15,19 @@ public class MaxOrderModel {
         this.success = success;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public List<MaxOrder> getResult() {
+    public String getResult() {
         return result;
     }
 
-    public void setResult(List<MaxOrder> result) {
+    public void setResult(String result) {
         this.result = result;
+    }
+
+    public List<MaxOrder> getMessage() {
+        return message;
+    }
+
+    public void setMessage(List<MaxOrder> message) {
+        this.message = message;
     }
 }

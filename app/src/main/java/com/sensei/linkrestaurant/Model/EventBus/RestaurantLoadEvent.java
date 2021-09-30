@@ -2,6 +2,7 @@ package com.sensei.linkrestaurant.Model.EventBus;
 
 
 import com.sensei.linkrestaurant.Model.Restaurant;
+import com.sensei.linkrestaurant.Model.RestaurantModel;
 
 import java.util.List;
 
@@ -15,10 +16,15 @@ public class RestaurantLoadEvent {
         this.message = message;
     }
 
+    public RestaurantLoadEvent() {
+    }
+
     public RestaurantLoadEvent(boolean success, List<Restaurant> restaurantList) {
         this.success = success;
         this.restaurantList = restaurantList;
     }
+
+
 
     public boolean isSuccess() {
         return success;
